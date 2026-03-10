@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36408.4
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPAddin", "BPAddin\BPAddin.csproj", "{53BD4088-0243-49C3-9019-C9C9434DD46D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2EA189C-6FD9-49F9-9720-91BF4A87181D}
+	EndGlobalSection
+EndGlobal
