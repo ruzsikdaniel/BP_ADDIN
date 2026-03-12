@@ -14,22 +14,27 @@ namespace BPAddin
         public virtual void EA_FileOpen(Repository repository) { }
     }
 
-    public class EAClass
-    {
-        public string clsName { get; set; }
-        public string pkgName { get; set; }
-        public EA.Package pkg { get; set; }
-    }
-
     public class AddinClass : AddinBase
     {
         private const string menuHeader = "-&TestGenerate";
-
         private const string menuGenerateCode = "&Generate Code";
+        private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
 
         private string message = "This is a sample text.";
 
         private bool projectOpened = false;
+
+        public Dictionary<string, string> stereotypeMap = new Dictionary<string, string>(){
+            { "Screen",   "win32Dialog" },
+            { "Button",   "win32Button" },
+            { "Label",    "win32StaticText" },
+            { "TextBox",  "win32Edit" },
+            { "ComboBox", "win32ComboBox" },
+            { "CheckBox", "win32CheckBox" },
+        };
+
+
+
 
         public override object EA_GetMenuItems(Repository repository, string location, string menuName)
         {
@@ -37,27 +42,63 @@ namespace BPAddin
                 return menuHeader;
 
             if (menuName == menuHeader)
-                return new string[] { menuGenerateCode };
+                return new string[] { menuGenerateCode, menuStereotypeInit };
 
             return null;
         }
 
         public override void EA_MenuClick(Repository repository, string location, string menuName, string itemName)
         {
-            if(itemName == menuGenerateCode)
+            if (!projectOpened) {
+                MessageBox.Show("Projekt nie je otvorený.", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (itemName == menuGenerateCode)
             {
+                try
+                {
+                    PackageFinder pf = new PackageFinder();
+                    List<EA.Package> packages = pf.get_all_packages(repository);
+
+                    CodeGenerator form = new CodeGenerator(repository);
+                    form.setLblText("Choose a package containing classes for generating:");
+                    form.initPackages(packages);
+                    form.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            /*
+            if (itemName == menuGenerateCode){
                 //message = "Generation clicked!";
                 //MessageBox.Show(message);
 
-                if (projectOpened){ 
+                if (projectOpened)
+                {
                     ClassFinder cf = new ClassFinder();
                     List<EAClass> classes = cf.getClassNames(repository);
 
                     CodeGenerator form = new CodeGenerator(repository);
 
                     form.setLblText("Choose a class to generate source code for.");
-                    form.initClasses(classes);
+                    form.initPackages(packages);
+                    //form.initClasses(classes);
                     form.ShowDialog();
+                }
+            }*/
+            else if (itemName == menuStereotypeInit)
+            {
+                try
+                {
+                    UILibraryInit init = new UILibraryInit();
+                    init.TagUILibraryPackage(repository);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Error during initialization process:\n\n" + e.Message, "BPAddin - error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -70,6 +111,24 @@ namespace BPAddin
             MessageBox.Show("The project " + projectName + " has been opened successfully.");
             projectOpened = true;
         }
+    }
+
+    public class PackageFinder
+    {
+        public List<EA.Package> get_all_packages(Repository repo) { 
+            List<EA.Package> result = new List<EA.Package>();
+
+            foreach (EA.Package model in repo.Models)
+                collect_packages(model, result);
+            return result;
+        }
+
+        private void collect_packages(EA.Package pkg, List<EA.Package> result) { 
+            result.Add(pkg);
+            foreach(EA.Package sub in pkg.Packages)
+                collect_packages(sub, result);
+        }
+
     }
 
     public class ClassFinder {
