@@ -1,0 +1,21 @@
+EA UI Diagram stereotype  →  UI_Library trieda  →  WinForms komponent
+─────────────────────────────────────────────────────────────────────
+win32Dialog               →  Screen             →  Form
+win32Button               →  Button             →  Button
+win32ComboBox             →  ComboBox           →  ComboBox
+win32Edit                 →  TextBox            →  TextBox
+win32CheckBox             →  CheckBox           →  CheckBox
+win32ListBox              →  ListBox            →  ListBox
+win32RadioButton          →  RadioButton        →  RadioButton
+win32StaticText           →  Label              →  Label
+win32Slider               →  Slider             →  TrackBar
+win32Spin                 →  Spinner            →  NumericUpDown
+win32RichEdit             →  RichTextBox        →  RichTextBox
+win32Progress             →  ProgressBar        →  ProgressBar
+win32Picture              →  PictureBox         →  PictureBox
+win32TabPane              →  TabControl         →  TabControl
+win32GroupBox             →  GroupBox           →  GroupBox
+win32ScrollBarH           →  ScrollBarH         →  HScrollBar
+win32ScrollBarV           →  ScrollBarV         →  VScrollBar
+win32CustomControls       →  CustomControl      →  UserControl
+win32DateTime             →  DateTimePicker     →  DateTimePicker

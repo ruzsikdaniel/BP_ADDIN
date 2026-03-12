@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BPAddin")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("This is an Add-in for Enterprise Architect.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BPAddin")]
