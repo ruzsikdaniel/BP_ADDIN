@@ -82,9 +82,24 @@ namespace BPAddin
                 "\n" + same);
             */
 
+            // TODO: check if actually changes filepaths for class elements
             setPackageFilepaths(selectedPackage, generatedDir_test);
 
             initializeScreens(repo, selectedPackage);
+
+
+            UIComponentReader uireader = new UIComponentReader();
+            DesignerFileBuilder dfbuilder = new DesignerFileBuilder();
+
+            foreach(EA.Element screen in screens)
+            {
+                List<UIComponentInfo> components = uireader.getComponents(repo, screen);
+                string designerContent = dfbuilder.build(screen.Name, components);
+
+                string designerPath = Path.Combine(generatedDir_test, screen.Name + ".Designer.cs");
+
+                System.IO.File.WriteAllText(designerPath, designerContent);
+            }
 
             try {
                 EA.Project proj = repo.GetProjectInterface();
@@ -107,9 +122,12 @@ namespace BPAddin
             if (outputDir == null)
                 return;
             */
-            
+
+
+            List<string> screenNames = screens.Select(el => el.Name).ToList();
 
             ProjectBuilder builder = new ProjectBuilder(generatedDir_test, uiLibDir_test, outputDir_test);
+            builder.setScreenNames(screenNames);
             builder.buildProject();
 
             Close();
@@ -127,6 +145,12 @@ namespace BPAddin
 
         private void setPartialToScreens(EA.Element el)
         {
+            // skip if "partial" already exists
+            foreach (EA.TaggedValue tagged in el.TaggedValues) {
+                if (tagged.Name == "partial")
+                    return;
+            }
+
             // create new tagged value for partial keyword
             EA.TaggedValue tv = (EA.TaggedValue)el.TaggedValues.AddNew("partial", "");
                 

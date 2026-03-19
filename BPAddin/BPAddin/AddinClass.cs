@@ -20,21 +20,25 @@ namespace BPAddin
         private const string menuGenerateCode = "&Generate Code";
         private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
 
-        private string message = "This is a sample text.";
-
         private bool projectOpened = false;
 
-        public Dictionary<string, string> stereotypeMap = new Dictionary<string, string>(){
-            { "Screen",   "win32Dialog" },
-            { "Button",   "win32Button" },
-            { "Label",    "win32StaticText" },
-            { "TextBox",  "win32Edit" },
-            { "ComboBox", "win32ComboBox" },
-            { "CheckBox", "win32CheckBox" },
+        public Dictionary<string, string> stereotypeMap = new Dictionary<string, string>() {
+            { "win32Dialog", "UIScreen"},
+            { "win32Button", "UIButton"},
+            { "win32CheckBox", "UICheckBox"},
+            { "win32Edit", "UITextBox"},
+            { "win32ComboBox", "UIComboBox"},
+            { "win32ListBox", "UIListBox"},
+            { "win32GroupBox", "UIGroupBox"},
+            { "win32RadioButton", "UI  RadioButton"},
+            { "win32StaticText", "UILabel"},
+            { "win32PictureBox", "UIPictureBox"},
+            { "win32ProgressBar", "UIProgressBar"},
+            { "win32ListControl", "UIListView"},
+            { "win32TreeControl", "UITreeView"},
+            { "win32TabControl", "UITabControl"},
+            { "win32DateTimePicker", "UIDateTimePicker"},
         };
-
-
-
 
         public override object EA_GetMenuItems(Repository repository, string location, string menuName)
         {
@@ -71,24 +75,6 @@ namespace BPAddin
                     MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            /*
-            if (itemName == menuGenerateCode){
-                //message = "Generation clicked!";
-                //MessageBox.Show(message);
-
-                if (projectOpened)
-                {
-                    ClassFinder cf = new ClassFinder();
-                    List<EAClass> classes = cf.getClassNames(repository);
-
-                    CodeGenerator form = new CodeGenerator(repository);
-
-                    form.setLblText("Choose a class to generate source code for.");
-                    form.initPackages(packages);
-                    //form.initClasses(classes);
-                    form.ShowDialog();
-                }
-            }*/
             else if (itemName == menuStereotypeInit)
             {
                 try
