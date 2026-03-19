@@ -16,9 +16,10 @@ namespace BPAddin
     {
         private EA.Repository repo;
 
-        private EAClass chosenClass = new EAClass();
         private List<EAClass> cls = new List<EAClass>();
         private List<EA.Package> packages = new List<EA.Package>();
+        private EA.Element uiScreen = null;
+        private List<EA.Element> screens = new List<EA.Element>();
 
 
         public CodeGenerator(EA.Repository repository)
@@ -68,7 +69,7 @@ namespace BPAddin
             string outputDir_test = "C:\\_School\\BP\\funkcny_prototyp\\project";
 
             /*
-            string generatedDir = ask_for_directory("Choose a folder for generated .cs files");
+            string generatedDir = askForDirectory("Choose a folder for generated .cs files");
             if (selectedPackage == null)
                 return;
             
@@ -83,6 +84,8 @@ namespace BPAddin
 
             setPackageFilepaths(selectedPackage, generatedDir_test);
 
+            initializeScreens(repo, selectedPackage);
+
             try {
                 EA.Project proj = repo.GetProjectInterface();
                 string pkgGuid = proj.GUIDtoXML(selectedPackage.PackageGUID);
@@ -96,11 +99,11 @@ namespace BPAddin
             }
 
             /*
-            string uiLibDir = ask_for_directory("Choose folder of UI Library.");
+            string uiLibDir = askForDirectory("Choose folder of UI Library.");
             if(uiLibDir == null)
                 return;
 
-            string outputDir = ask_for_directory("Choose folder for the output WinForms projekt.");
+            string outputDir = askForDirectory("Choose folder for the output WinForms projekt.");
             if (outputDir == null)
                 return;
             */
@@ -120,6 +123,114 @@ namespace BPAddin
             MessageBox.Show("Code generated for class: " + chosenClass.clsName);
             Close();
             */
+        }
+
+        private void setPartialToScreens(EA.Element el)
+        {
+            // create new tagged value for partial keyword
+            EA.TaggedValue tv = (EA.TaggedValue)el.TaggedValues.AddNew("partial", "");
+                
+            tv.Value = "true";
+            tv.Update();
+
+            el.TaggedValues.Refresh();
+        }
+
+        private void setInitConstructors(EA.Element el) {
+            EA.Method constructor = null;
+            foreach (EA.Method m in el.Methods)
+            {
+                if (m.Name == el.Name)
+                {
+                    constructor = m;    // save existing constructor for later rewriting
+                    break;
+                }
+            }
+            if (constructor == null)
+            {
+                // add new method into element
+                constructor = (EA.Method)el.Methods.AddNew(el.Name, "");
+                constructor.Update();
+                el.Methods.Refresh();
+            }
+            // set internal code of method
+            constructor.Code = "InitializeComponent();";
+            constructor.Update();
+
+            // save method and element changes
+            el.Methods.Refresh();
+            el.Update();
+        }
+
+        private void initializeScreens(EA.Repository repo, EA.Package pkg)
+        {
+            findScreenElement(repo);
+            if(this.uiScreen == null)
+            {
+                MessageBox.Show("Screen element not found.");
+                return;
+            }
+
+            screens.Clear();
+            initScreensArray(pkg);
+
+            foreach (EA.Element el in screens)
+            {
+                setPartialToScreens(el);
+                setInitConstructors(el);
+            }
+        }
+
+        private void initScreensArray(EA.Package pkg) { 
+            foreach(EA.Element el in pkg.Elements)
+            {
+                if(el.Type == "Class")
+                {
+                    foreach(EA.Connector connector in el.Connectors)
+                    {
+                        if((connector.Type == "Generalization" && connector.SupplierID == uiScreen.ElementID)){
+                            screens.Add(el);
+                            break;
+                        }
+                    }
+
+                }
+            }
+
+            foreach(EA.Package sub in pkg.Packages)
+            {
+                initScreensArray(sub);
+            }
+        }
+
+        private void findScreenElement(EA.Repository repo) {
+            if (this.uiScreen != null)
+                return;
+
+            foreach (EA.Package model in repo.Models)
+            {
+                EA.Element el = findElementByName(model, "UIScreen");
+                if (el != null)
+                {
+                    this.uiScreen = el;
+                    return;
+                }
+            }
+        }
+
+        private EA.Element findElementByName(EA.Package pkg, string name) {
+            foreach (EA.Element el in pkg.Elements) {
+                if (el.Name == name)
+                    return el;
+            }
+            
+            foreach (EA.Package sub in pkg.Packages)
+            {
+                EA.Element el = findElementByName(sub, name);
+                if(el != null)
+                    return el;
+            }
+            return null;
         }
 
         private void setPackageFilepaths(EA.Package pkg, string dir) {
@@ -162,7 +273,7 @@ namespace BPAddin
             }
         }
 
-        private string ask_for_directory(string desc) {
+        private string askForDirectory(string desc) {
             using (FolderBrowserDialog dlg = new FolderBrowserDialog()) { 
                 dlg.Description = desc;
                 dlg.ShowNewFolderButton = true;

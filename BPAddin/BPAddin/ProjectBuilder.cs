@@ -30,16 +30,20 @@ namespace BPAddin
                 runCommand("dotnet", "new winforms -o \"" + outputProjectDir + "\" --force");
 
                 // copy EA-generated .cs fiels
-                copyCSFiles(generatedSrcDir, outputProjectDir);
+                //copyCSFiles(generatedSrcDir, outputProjectDir);
 
                 // copy 'all' UI_Library components
                 // TODO: fetch only the used UI_Library compontents from UI_Library
                 // - possibly to an internal directory to segragate from other project classes
-                copyCSFiles(uiLibrarySrcDir, outputProjectDir);
 
-                addUsingToGenerated(outputProjectDir);
+                copyUILibrary();
+                //copyCSFiles(uiLibrarySrcDir, outputProjectDir);
 
-                // build the project - results in .exe file
+                cleanOldDirectives(outputProjectDir);
+
+                //addUsingToGenerated(outputProjectDir);
+
+                // build the project ->.exe file
                 runCommand("dotnet", "build \"" + outputProjectDir + "\"");
 
                 // find the .exe file
@@ -64,7 +68,46 @@ namespace BPAddin
             }
         }
 
-        private void copyCSFiles(string sourceDir, string destDir, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+
+        private void copyUILibrary()
+        {
+            string assetsDir = Path.Combine(outputProjectDir, "ui_assets");
+
+            if (Directory.Exists(assetsDir))
+                Directory.Delete(assetsDir, true);
+
+            Directory.CreateDirectory(assetsDir);
+
+            copyCSFiles(this.uiLibrarySrcDir, assetsDir);   // Screen.cs, Button.cs...
+            copyCSFiles(this.generatedSrcDir, assetsDir);   // scrMain.cs, screenScreenA.cs...
+        }
+
+        private void copyUILibrary_old() {
+
+            string assetsDirName = "ui_assets";
+            string assetsDir = Path.Combine(outputProjectDir, assetsDirName);
+            
+            // empty the "./ui_assets folder"
+            if (Directory.Exists(assetsDir)) {
+                Directory.Delete(assetsDir, true);
+            }
+
+            // create empty "./ui_assets" folder
+            Directory.CreateDirectory(assetsDir);
+
+            
+            // find name for source UI_Library folder
+            string uiLibrarySrcDirName = Path.GetFileName(this.uiLibrarySrcDir);
+
+            // create "./ui_assets/%UI_Library%" path and folder
+            string uiLibraryDir = Path.Combine(outputProjectDir, uiLibrarySrcDirName);
+            Directory.CreateDirectory(uiLibraryDir);    
+
+            copyCSFiles(this.uiLibrarySrcDir, assetsDir);   // Screen.cs, Button.cs, ...
+            copyCSFiles(this.generatedSrcDir, assetsDir);   // screenScreenA.cs, btnOK.cs, ...
+        }
+
+        private void copyCSFiles(string sourceDir, string destDir, SearchOption searchOption = SearchOption.AllDirectories)
         {
             if (!Directory.Exists(sourceDir))
             {
@@ -126,7 +169,19 @@ namespace BPAddin
                 {
                     throw new Exception("Command failed: " + command + " " + args + "\n\nOutput:\n" + output + "\n\nError:\n" + error);
                 }
-                log(output);
+            }
+        }
+
+        private void cleanOldDirectives(string outputDir) {
+            foreach (string file in Directory.GetFiles(outputDir, "*.cs", SearchOption.AllDirectories)){ 
+                string content = File.ReadAllText(file); 
+                
+                content = content.Replace("using BPAddin.UI_Library;\r\n", "");
+                content = content.Replace("using BPAddin.UI_Library;\n", "");
+                content = content.Replace("using BPAddin.UI_LIbrary;\r\n", "");
+                content = content.Replace("using BPAddin.UI_LIbrary;\n", "");
+
+                File.WriteAllText(file, content);
             }
         }
 

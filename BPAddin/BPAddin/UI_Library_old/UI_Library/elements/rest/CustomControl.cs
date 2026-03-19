@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace BPAddin
 {
-    public class CustomControl : UI_Element
+    public class CustomControl : System.Windows.Forms.Control
     {
-        public CustomControl() : base("CustomControl", "win32CustomControls", "System.Windows.Forms.UserControl") { }
+        public CustomControl() {
+        
+        }
     }
 }

@@ -43,11 +43,7 @@ namespace BPAddin
             repository.RefreshModelView(selected.PackageID);
 
             MessageBox.Show(
-                "Done! Stereotype <<UIElement>> was added to " + count + " classes.\n" +
-                "Package: " + selected.Name,
-                "BPAddin – Tag UI Library",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
+                "Done! Stereotype <<UIElement>> was added to " + count + " classes.\n" + "Package: " + selected.Name, "BPAddin – Tag UI Library", MessageBoxButtons.OK, MessageBoxIcon.Information
             );
 
         }

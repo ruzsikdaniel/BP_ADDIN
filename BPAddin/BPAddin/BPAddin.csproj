@@ -62,43 +62,26 @@
     </Compile>
     <Compile Include="ProjectBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="test.cs" />
     <Compile Include="UILibraryInit.cs" />
-    <Compile Include="UI_LIbrary\elements\Button.cs">
+    <Compile Include="UI_Library\UIButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI_LIbrary\elements\CheckBox.cs">
+    <Compile Include="UI_Library\UICheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI_LIbrary\elements\ComboBox.cs">
+    <Compile Include="UI_Library\UIComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI_LIbrary\elements\Label.cs">
+    <Compile Include="UI_Library\UILabel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI_LIbrary\elements\rest\CustomControl.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\DateTimePicker.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\GroupBox.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\ListBox.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\ListControls.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\PictureBox.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\ProgressBar.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\RadioButton.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\RichTextBox.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\ScrollBarH.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\ScrollBarV.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\Slider.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\Spinner.cs" />
-    <Compile Include="UI_LIbrary\elements\rest\TabControl.cs" />
-    <Compile Include="UI_LIbrary\elements\TextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI_LIbrary\elements\rest\TreeView.cs" />
-    <Compile Include="UI_LIbrary\elements\Screen.cs">
+    <Compile Include="UI_Library\UIScreen.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI_LIbrary\IUIElement.cs" />
-    <Compile Include="UI_LIbrary\UI_Element.cs" />
-    <Compile Include="UI_LIbrary\UI_Library.cs" />
+    <Compile Include="UI_Library\UITextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BPAddin.reg" />
