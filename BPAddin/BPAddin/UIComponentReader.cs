@@ -19,9 +19,9 @@ namespace BPAddin
         private Dictionary<string, string> stereotypeMap;
         private const double ea_to_px = 2.0;
 
-        public UIComponentReader(Dictionary<string, string> map)
+        public UIComponentReader()
         {
-            this.stereotypeMap = map;
+            this.stereotypeMap = new StereotypeMap().map;
         }
         
         public List<UIComponentInfo> getComponents(EA.Repository repo, EA.Element screenElement)

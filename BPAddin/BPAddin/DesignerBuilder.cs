@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BPAddin
 {
-    public class DesignerFileBuilder
+    public class DesignerBuilder
     {
         public string build(string screenName, List<UIComponentInfo> components)
         {

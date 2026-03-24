@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BPAddin
+{
+    public class StereotypeMap
+    {
+        public Dictionary<string, string> map = new Dictionary<string, string>() {
+            { "win32Dialog", "UIScreen"},
+            { "win32Button", "UIButton"},
+            { "win32CheckBox", "UICheckBox"},
+            { "win32Edit", "UITextBox"},
+            { "win32ComboBox", "UIComboBox"},
+            { "win32ListBox", "UIListBox"},
+            { "win32GroupBox", "UIGroupBox"},
+            { "win32RadioButton", "UI  RadioButton"},
+            { "win32StaticText", "UILabel"},
+            { "win32PictureBox", "UIPictureBox"},
+            { "win32ProgressBar", "UIProgressBar"},
+            { "win32ListControl", "UIListView"},
+            { "win32TreeControl", "UITreeView"},
+            { "win32TabControl", "UITabControl"},
+            { "win32DateTimePicker", "UIDateTimePicker"},
+        };
+    }
+}

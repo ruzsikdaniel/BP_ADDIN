@@ -64,48 +64,22 @@ namespace BPAddin
 
             EA.Package selectedPackage = packages[index];
 
-            string generatedDir_test = "C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\class_generation_output";
-            string uiLibDir_test = "C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UI_Library";
-            string outputDir_test = "C:\\_School\\BP\\funkcny_prototyp\\project";
-
-            /*
-            string generatedDir = askForDirectory("Choose a folder for generated .cs files");
-            if (selectedPackage == null)
-                return;
-            
-            // test
-            string same = "different";
-            if (generatedDir == generatedDir_test)
-                same = "same";
-            MessageBox.Show("generatedDir_test - " + generatedDir_test +
-                "\n\ngeneratedDir - " + generatedDir +
-                "\n" + same);
-            */
+            string generatedDir = "C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\class_generation_output";
+            string uiLibDir = "C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UI_Library";
+            string outputDir = "C:\\_School\\BP\\funkcny_prototyp\\project";
 
             // TODO: check if actually changes filepaths for class elements
-            setPackageFilepaths(selectedPackage, generatedDir_test);
+            setPackageFilepaths(selectedPackage, generatedDir);
 
-            initializeScreens(repo, selectedPackage);
+            initScreenClasses(repo, selectedPackage);
 
-
-            UIComponentReader uireader = new UIComponentReader();
-            DesignerFileBuilder dfbuilder = new DesignerFileBuilder();
-
-            foreach(EA.Element screen in screens)
-            {
-                List<UIComponentInfo> components = uireader.getComponents(repo, screen);
-                string designerContent = dfbuilder.build(screen.Name, components);
-
-                string designerPath = Path.Combine(generatedDir_test, screen.Name + ".Designer.cs");
-
-                System.IO.File.WriteAllText(designerPath, designerContent);
-            }
+            initDesigners(generatedDir);
 
             try {
                 EA.Project proj = repo.GetProjectInterface();
                 string pkgGuid = proj.GUIDtoXML(selectedPackage.PackageGUID);
                 proj.GeneratePackage(pkgGuid, "");
-                MessageBox.Show("EA generation complete.\n Files: " + generatedDir_test, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("EA generation complete.\n Files: " + generatedDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch(Exception ex)
             {
@@ -113,34 +87,13 @@ namespace BPAddin
                 return;
             }
 
-            /*
-            string uiLibDir = askForDirectory("Choose folder of UI Library.");
-            if(uiLibDir == null)
-                return;
-
-            string outputDir = askForDirectory("Choose folder for the output WinForms projekt.");
-            if (outputDir == null)
-                return;
-            */
-
-
             List<string> screenNames = screens.Select(el => el.Name).ToList();
 
-            ProjectBuilder builder = new ProjectBuilder(generatedDir_test, uiLibDir_test, outputDir_test);
+            ProjectBuilder builder = new ProjectBuilder(generatedDir, uiLibDir, outputDir);
             builder.setScreenNames(screenNames);
             builder.buildProject();
 
             Close();
-
-
-            /*EA.Project project = repo.GetProjectInterface();
-            string pkg_guid = project.GUIDtoXML(chosenClass.pkg.PackageGUID);
-
-            project.GeneratePackage(pkg_guid, "");
-
-            MessageBox.Show("Code generated for class: " + chosenClass.clsName);
-            Close();
-            */
         }
 
         private void setPartialToScreens(EA.Element el)
@@ -186,7 +139,7 @@ namespace BPAddin
             el.Update();
         }
 
-        private void initializeScreens(EA.Repository repo, EA.Package pkg)
+        private void initScreenClasses(EA.Repository repo, EA.Package pkg)
         {
             findScreenElement(repo);
             if(this.uiScreen == null)
@@ -226,6 +179,24 @@ namespace BPAddin
                 initScreensArray(sub);
             }
         }
+
+        private void initDesigners(string generatedDir) {
+
+            UIComponentReader uireader = new UIComponentReader();
+            DesignerBuilder dfbuilder = new DesignerBuilder();
+
+            foreach (EA.Element screen in screens)
+            {
+                List<UIComponentInfo> components = uireader.getComponents(repo, screen);
+                string designerContent = dfbuilder.build(screen.Name, components);
+
+                string designerPath = Path.Combine(generatedDir, screen.Name + ".Designer.cs");
+
+                System.IO.File.WriteAllText(designerPath, designerContent);
+            }
+        }
+
+
 
         private void findScreenElement(EA.Repository repo) {
             if (this.uiScreen != null)
@@ -281,31 +252,11 @@ namespace BPAddin
 
                     el.Files.Refresh();
                     el.Update();
-                    /*
-                    if (!System.IO.File.Exists(filepath))
-                    {
-                        System.IO.Directory.CreateDirectory(dir);
-                        System.IO.File.WriteAllText(filepath, "");
-                        MessageBox.Show("File not found at " +  + ", created empty .cs for " + filepath);
-                    }
-                    */
                 }
             }
 
             foreach (EA.Package sub in pkg.Packages) {
                 setPackageFilepaths(sub, dir);
-            }
-        }
-
-        private string askForDirectory(string desc) {
-            using (FolderBrowserDialog dlg = new FolderBrowserDialog()) { 
-                dlg.Description = desc;
-                dlg.ShowNewFolderButton = true;
-
-                if (dlg.ShowDialog() == DialogResult.OK) {
-                    return dlg.SelectedPath;
-                }
-                return null;
             }
         }
     }

@@ -16,76 +16,57 @@ namespace BPAddin
 
     public class AddinClass : AddinBase
     {
+        // menu elements here
         private const string menuHeader = "-&TestGenerate";
         private const string menuGenerateCode = "&Generate Code";
         private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
+        private const string menuSettings = "&Add-in Settings";
 
+        // array of sub-menu elements for particular root menu element
+        private List<string> menus_menuHeader = new List<string>();
+
+        // state variables
         private bool projectOpened = false;
-
-        public Dictionary<string, string> stereotypeMap = new Dictionary<string, string>() {
-            { "win32Dialog", "UIScreen"},
-            { "win32Button", "UIButton"},
-            { "win32CheckBox", "UICheckBox"},
-            { "win32Edit", "UITextBox"},
-            { "win32ComboBox", "UIComboBox"},
-            { "win32ListBox", "UIListBox"},
-            { "win32GroupBox", "UIGroupBox"},
-            { "win32RadioButton", "UI  RadioButton"},
-            { "win32StaticText", "UILabel"},
-            { "win32PictureBox", "UIPictureBox"},
-            { "win32ProgressBar", "UIProgressBar"},
-            { "win32ListControl", "UIListView"},
-            { "win32TreeControl", "UITreeView"},
-            { "win32TabControl", "UITabControl"},
-            { "win32DateTimePicker", "UIDateTimePicker"},
-        };
 
         public override object EA_GetMenuItems(Repository repository, string location, string menuName)
         {
-            if (menuName == "")
-                return menuHeader;
+            // initialize menu arrays
+            // each menu array will contains names of its sub-menu elements
+            initMenuArrays();
 
-            if (menuName == menuHeader)
-                return new string[] { menuGenerateCode, menuStereotypeInit };
-
-            return null;
+            switch (menuName)
+            {
+                case "":
+                    return menuHeader;
+                case menuHeader:
+                    return menus_menuHeader.ToArray();
+                // each case here represents a root menu element
+                default:
+                    return null;
+            }
         }
 
-        public override void EA_MenuClick(Repository repository, string location, string menuName, string itemName)
+        public override void EA_MenuClick(Repository repo, string location, string menuName, string itemName)
         {
             if (!projectOpened) {
                 MessageBox.Show("Projekt nie je otvorený.", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (itemName == menuGenerateCode)
+            // TODO: reformat this into a dictionary of menu elements and handler function
+            // let appropriate handler functions be called in the case of particular menu elements
+            switch (itemName)
             {
-                try
-                {
-                    PackageFinder pf = new PackageFinder();
-                    List<EA.Package> packages = pf.get_all_packages(repository);
-
-                    CodeGenerator form = new CodeGenerator(repository);
-                    form.setLblText("Choose a package containing classes for generating:");
-                    form.initPackages(packages);
-                    form.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else if (itemName == menuStereotypeInit)
-            {
-                try
-                {
-                    UILibraryInit init = new UILibraryInit();
-                    init.initUIElementStereotype(repository);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show("Error during initialization process:\n\n" + e.Message, "BPAddin - error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                case menuGenerateCode:
+                    handleMenuGenerateCode(repo);
+                    break;
+                case menuStereotypeInit:
+                    handleMenuStereotypeInit(repo);
+                    break;
+                case menuSettings:
+                    handleMenuSettings(repo);
+                    break;
+                default: return;
             }
         }
 
@@ -97,6 +78,59 @@ namespace BPAddin
             MessageBox.Show("The project " + projectName + " has been opened successfully.");
             projectOpened = true;
         }
+
+        private void initMenuArrays()
+        {
+            // menu_menuHeader - main menu
+            clearMenuArray(menus_menuHeader);
+            menus_menuHeader.Add(menuGenerateCode);
+            menus_menuHeader.Add(menuStereotypeInit);
+            menus_menuHeader.Add(menuSettings);
+
+            // add menu elements to different root menus
+            // ...
+        }
+
+        private void clearMenuArray(List<string> menuArray)
+        {
+            menuArray.Clear();
+        }
+
+        private void handleMenuGenerateCode(EA.Repository repo) {
+            try
+            {
+                PackageFinder pf = new PackageFinder();
+                List<EA.Package> packages = pf.get_all_packages(repo);
+
+                CodeGenerator form = new CodeGenerator(repo);
+                form.setLblText("Choose a package containing classes for generating:");
+                form.initPackages(packages);
+                form.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void handleMenuStereotypeInit(EA.Repository repo) {
+            try
+            {
+                UILibraryInit init = new UILibraryInit();
+                init.initUIElementStereotype(repo);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error during initialization process:\n\n" + e.Message, "BPAddin - error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void handleMenuSettings(EA.Repository repo) { 
+            // menuSettings menu logic
+
+
+        }
+
     }
 
     public class PackageFinder
@@ -115,41 +149,5 @@ namespace BPAddin
                 collect_packages(sub, result);
         }
 
-    }
-
-    public class ClassFinder {
-
-        public List<EAClass> getClassNames(Repository repository)
-        { 
-            List<EAClass> classes = new List<EAClass>();
-
-            foreach (EA.Package model in repository.Models)
-            {
-                findClasses(model, classes);
-            }
-
-            return classes;
-        }
-
-        private void findClasses(Package pkg, List<EAClass> classes)
-        {
-            foreach (EA.Element el in pkg.Elements)
-            {
-                if (el.Type == "Class")
-                {
-                    classes.Add(new EAClass
-                    {
-                        clsName = el.Name,
-                        pkgName = pkg.Name,
-                        pkg = pkg
-                    });
-                }
-            }
-
-            foreach (EA.Package subPkg in pkg.Packages)
-            {
-                findClasses(subPkg, classes);
-            }
-        }
     }
 }

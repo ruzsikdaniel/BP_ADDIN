@@ -24,28 +24,28 @@ partial class screenScreenA
         // buttonCancel
         this.buttonCancel.Name = "buttonCancel";
         this.buttonCancel.Text = "Cancel";
-        this.buttonCancel.Location = new System.Drawing.Point(154, 172);
+        this.buttonCancel.Location = new System.Drawing.Point(266, 170);
         this.buttonCancel.Size = new System.Drawing.Size(100, 28);
         this.Controls.Add(this.buttonCancel);
 
         // editEditControlA
         this.editEditControlA.Name = "editEditControlA";
         this.editEditControlA.Text = "Edit Control A";
-        this.editEditControlA.Location = new System.Drawing.Point(38, 46);
+        this.editEditControlA.Location = new System.Drawing.Point(38, 44);
         this.editEditControlA.Size = new System.Drawing.Size(328, 30);
         this.Controls.Add(this.editEditControlA);
 
         // statictextLabelA
         this.statictextLabelA.Name = "statictextLabelA";
         this.statictextLabelA.Text = "Label A";
-        this.statictextLabelA.Location = new System.Drawing.Point(40, 20);
+        this.statictextLabelA.Location = new System.Drawing.Point(40, 18);
         this.statictextLabelA.Size = new System.Drawing.Size(100, 16);
         this.Controls.Add(this.statictextLabelA);
 
         // buttonOK
         this.buttonOK.Name = "buttonOK";
         this.buttonOK.Text = "OK";
-        this.buttonOK.Location = new System.Drawing.Point(40, 172);
+        this.buttonOK.Location = new System.Drawing.Point(40, 170);
         this.buttonOK.Size = new System.Drawing.Size(100, 28);
         this.Controls.Add(this.buttonOK);
 

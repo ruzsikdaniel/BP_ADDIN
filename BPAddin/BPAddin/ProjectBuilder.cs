@@ -28,6 +28,15 @@ namespace BPAddin
             this.screenNames = names;
         }
 
+        public void init() {
+            if (Directory.Exists(this.outputProjectDir))
+            {
+                Directory.Delete(this.outputProjectDir, recursive: true);
+            }
+
+
+        }
+
         public void buildProject()
         {
             try
