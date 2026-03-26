@@ -13,120 +13,158 @@ namespace BPAddin
     {
         private string generatedSrcDir;  // directory for EA-generated .cs files
         private string uiLibrarySrcDir;  // directory for UI_Library elements
-        private string outputProjectDir; // directory for project created from generated files
+        private string projectDir; // directory for project created from generated files
 
         private List<string> screenNames = new List<string>();
 
-        public ProjectBuilder(string generatedSrcDir, string uiLibrarySrcDir, string outputProjectDir)
+        public ProjectBuilder(string generatedSrcDir, string uiLibrarySrcDir, string projectDir)
         {
             this.generatedSrcDir = generatedSrcDir;
             this.uiLibrarySrcDir = uiLibrarySrcDir;
-            this.outputProjectDir = outputProjectDir;
+            this.projectDir = projectDir;
         }
 
         public void setScreenNames(List<string> names) { 
             this.screenNames = names;
         }
 
-        public void init() {
-            if (Directory.Exists(this.outputProjectDir))
-            {
-                Directory.Delete(this.outputProjectDir, recursive: true);
-            }
-
-
-        }
-
         public void buildProject()
         {
+            string tempDir = projectDir + "_temp";
             try
             {
-                runCommand("dotnet", "new winforms -o \"" + outputProjectDir + "\" --force");
-                copyUILibrary();
+                if (Directory.Exists(projectDir)) {
+                    Directory.Delete(projectDir, true );
+                }
+
+                runCommand("dotnet", "new winforms -o \"" + projectDir + "\" --force");
+
+                MessageBox.Show(
+                    "projectDir exists: " + Directory.Exists(projectDir) + "\n" +
+                    "tempDir exists: " + Directory.Exists(tempDir) + "\n" +
+                    "projectDir: " + projectDir + "\n" +
+                    "tempDir: " + tempDir
+                );
+
+
+                Directory.Move(projectDir, tempDir);
+
+                MessageBox.Show(
+                    "After Move:\n" +
+                    "projectDir exists: " + Directory.Exists(projectDir) + "\n" +
+                    "tempDir exists: " + Directory.Exists(tempDir)
+                );
+
+                collectUIAssets(tempDir);
+                mergeForm1Designer(tempDir);
+                updateProgramFile(tempDir);
+                cleanOldDirectives(tempDir);
                 
-                mergeForm1Designer();
+                if (Directory.Exists(projectDir))
+                    Directory.Delete(projectDir, true);
 
-                writeCustomProgramCs();
-
-                cleanOldDirectives(outputProjectDir);
+                Directory.Move(tempDir, projectDir);
 
 
                 // build the project ->.exe file
-                runCommand("dotnet", "build \"" + outputProjectDir + "\"");
+                runCommand("dotnet", "build \"" + projectDir + "\"");                
 
                 // find the .exe file
-                string exePath = findExe(outputProjectDir);
+                string exePath = findExe(projectDir);
                 if (exePath != null)
                 {
                     if(MessageBox.Show("Compilation successful!\n\n.exe file:\n" + exePath + "\n\nDo you want to launch the .exe file?", "BPAddin – Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
                         Process.Start(exePath);
                 }
                 else{
-                    MessageBox.Show("Compilation has finished, .exe was not found.\nPlease refer to: " + outputProjectDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Compilation has finished, .exe was not found.\nPlease refer to: " + projectDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
             catch (Exception ex)
             {
+                if (Directory.Exists(tempDir))
+                {
+                    Directory.Delete(tempDir, true);
+                }
+
                 MessageBox.Show("Error during compilation:\n\n" + ex.Message, "BPAddin – Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-
-        private void copyUILibrary()
+        private void collectUIAssets(string projectDir)
         {
-            string assetsDir = Path.Combine(outputProjectDir, "ui_assets");
+            string assetsDir = Path.Combine(projectDir, "ui_assets");
 
             if (Directory.Exists(assetsDir))
                 Directory.Delete(assetsDir, true);
 
             Directory.CreateDirectory(assetsDir);
 
-            copyCSFiles(this.uiLibrarySrcDir, assetsDir);   // Screen.cs, Button.cs...
-
-            foreach (string file in Directory.GetFiles(this.generatedSrcDir, "*.Designer.cs", SearchOption.TopDirectoryOnly))
-            {
-                string fileName = Path.GetFileName(file);
-                string dest = Path.Combine(outputProjectDir, fileName);
-                File.Copy(file, dest, overwrite: true);
-            }
-
-
-            foreach (string file in Directory.GetFiles(this.generatedSrcDir, "*.cs", SearchOption.TopDirectoryOnly))
-            {
-                string fileName = Path.GetFileName(file);
-                if (fileName == "Program.cs") continue;
-                if (fileName.EndsWith(".Designer.cs")) continue;  // <-- pridaj toto
-
-                string nameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
-                bool isScreen = screenNames.Contains(nameWithoutExt);
-
-                string dest = isScreen ? Path.Combine(outputProjectDir, fileName) : Path.Combine(assetsDir, fileName);
-
-                File.Copy(file, dest, overwrite: true);
-            }
+            copyUILibrary(assetsDir);   // UIScreen.cs, UIButton.cs...
+            moveGeneratedCS(assetsDir, projectDir); // buttonButtonOK.cs, screenScreenA.cs, ...
         }
 
-
-        private void copyCSFiles(string sourceDir, string destDir, SearchOption searchOption = SearchOption.AllDirectories)
-        {
-            if (!Directory.Exists(sourceDir))
+        private void moveGeneratedCS(string assetsDir, string projectDir) {
+            if (!Directory.Exists(generatedSrcDir))
             {
-                MessageBox.Show("Folder does not exist: " + sourceDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Folder for generated files does not exist: " + generatedSrcDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            foreach (string file in Directory.GetFiles(sourceDir, "*.cs", searchOption))
+
+
+            foreach (string file in Directory.GetFiles(generatedSrcDir, "*.Designer.cs", SearchOption.TopDirectoryOnly))
             {
                 string fileName = Path.GetFileName(file);
-                if (fileName == "Program.cs") 
+                string dest = Path.Combine(projectDir, fileName);
+
+                File.Move(file, dest);
+            }
+
+
+            foreach (string file in Directory.GetFiles(generatedSrcDir, "*.cs", SearchOption.TopDirectoryOnly))
+            {
+                string fileName = Path.GetFileName(file);
+                if (fileName == "Program.cs")
                     continue;
 
-                string dest = Path.Combine(destDir, fileName);
+                if (fileName.EndsWith(".Designer.cs"))
+                    continue;
+
+                string fileNameRaw = Path.GetFileNameWithoutExtension(fileName);
+                bool isScreen = screenNames.Contains(fileNameRaw);
+
+                string dest;
+                if (isScreen)
+                    dest = Path.Combine(projectDir, fileName);
+                else
+                    dest = Path.Combine(assetsDir, fileName);
+
+                File.Move(file, dest);
+            }
+        }
+
+
+        private void copyUILibrary(string assetsDir)
+        {
+
+            foreach (string file in Directory.GetFiles(uiLibrarySrcDir, "*.cs", SearchOption.TopDirectoryOnly))
+            {
+                string fileName = Path.GetFileName(file);
+
+                // TODO: use dynamic map of UI Library element file names instead
+                if (!fileName.StartsWith("UI"))
+                    continue;
+
+                string dest = Path.Combine(assetsDir, fileName);
+
+
+                // copy each "UI...cs" files from the UI Library directory
                 File.Copy(file, dest, overwrite: true);
             }
         }
 
 
-        private void mergeForm1Designer()
+        private void mergeForm1Designer(string dest)
         {
             if (screenNames.Count == 0) 
                 return;
@@ -134,7 +172,7 @@ namespace BPAddin
             // first screen in array is default
             string mainScreen = screenNames[0];
 
-            string form1DesPath = Path.Combine(outputProjectDir, "Form1.Designer.cs");
+            string form1DesPath = Path.Combine(dest, "Form1.Designer.cs");
             if (!File.Exists(form1DesPath)) 
                 return;
 
@@ -152,7 +190,7 @@ namespace BPAddin
             string initBody = form1Content.Substring(braceStart + 1, braceEnd - braceStart - 1);
 
             // write Designer.cs into main screen
-            string mainDesPath = Path.Combine(outputProjectDir, mainScreen + ".Designer.cs");   // path - ./project/<ScreenName>.Designer.cs
+            string mainDesPath = Path.Combine(dest, mainScreen + ".Designer.cs");   // path - ./project/<ScreenName>.Designer.cs
             string mainDesContent = File.ReadAllText(mainDesPath);
 
             string oldInit = "        this.SuspendLayout();\r\n        this.ResumeLayout(false);\r\n";
@@ -163,8 +201,8 @@ namespace BPAddin
 
             File.WriteAllText(mainDesPath, mainDesContent);
 
-            File.Delete(Path.Combine(outputProjectDir, "Form1.cs"));
-            File.Delete(Path.Combine(outputProjectDir, "Form1.Designer.cs"));
+            File.Delete(Path.Combine(dest, "Form1.cs"));
+            File.Delete(Path.Combine(dest, "Form1.Designer.cs"));
         }
 
         private int findMatchingBrace(string text, int openBrace)
@@ -181,7 +219,7 @@ namespace BPAddin
             }
             return -1;
         }
-        private void writeCustomProgramCs()
+        private void updateProgramFile(string dest)
         {
             if (screenNames.Count == 0) return;
             string mainScreen = screenNames[0];
@@ -197,7 +235,7 @@ namespace BPAddin
                 "        Application.Run(new " + mainScreen + "());\r\n" +
                 "    }\r\n}\r\n";
 
-            File.WriteAllText(Path.Combine(outputProjectDir, "Program.cs"), content);
+            File.WriteAllText(Path.Combine(dest, "Program.cs"), content);
         }
 
 

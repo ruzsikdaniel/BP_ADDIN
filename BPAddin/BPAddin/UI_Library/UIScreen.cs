@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -19,10 +19,14 @@ namespace BPAddin
             this.BackColor = Color.WhiteSmoke;
             this.StartPosition = FormStartPosition.CenterScreen;
         }
-        /*
-        public string classname => "Screen";
-        public string ea_stereotype => "win32Dialog";
-        public string winforms_type => "System.Windows.Forms.Form";
-        */
+
+        public new void Show() { 
+            base.Show();
+        }
+
+        public new DialogResult ShowDialog()
+        {
+            return base.ShowDialog();
+        }
     }
 }

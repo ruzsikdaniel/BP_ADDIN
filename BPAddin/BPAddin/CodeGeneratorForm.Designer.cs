@@ -1,6 +1,6 @@
 ﻿namespace BPAddin
 {
-    partial class CodeGenerator
+    partial class CodeGeneratorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -30,7 +30,7 @@
         {
             this.lblText = new System.Windows.Forms.Label();
             this.btnGenerate = new System.Windows.Forms.Button();
-            this.cbxClasses = new System.Windows.Forms.ComboBox();
+            this.cbxPackages = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // lblText
@@ -52,23 +52,23 @@
             this.btnGenerate.UseVisualStyleBackColor = true;
             this.btnGenerate.Click += new System.EventHandler(this.btnGenerate_Click);
             // 
-            // cbxClasses
+            // cbxPackages
             // 
-            this.cbxClasses.FormattingEnabled = true;
-            this.cbxClasses.Location = new System.Drawing.Point(12, 40);
-            this.cbxClasses.Name = "cbxClasses";
-            this.cbxClasses.Size = new System.Drawing.Size(121, 21);
-            this.cbxClasses.TabIndex = 3;
+            this.cbxPackages.FormattingEnabled = true;
+            this.cbxPackages.Location = new System.Drawing.Point(12, 40);
+            this.cbxPackages.Name = "cbxPackages";
+            this.cbxPackages.Size = new System.Drawing.Size(121, 21);
+            this.cbxPackages.TabIndex = 3;
             // 
-            // CodeGenerator
+            // CodeGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(390, 164);
-            this.Controls.Add(this.cbxClasses);
+            this.Controls.Add(this.cbxPackages);
             this.Controls.Add(this.btnGenerate);
             this.Controls.Add(this.lblText);
-            this.Name = "CodeGenerator";
+            this.Name = "CodeGeneratorForm";
             this.Text = "Generate code from model";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -79,6 +79,6 @@
 
         private System.Windows.Forms.Label lblText;
         private System.Windows.Forms.Button btnGenerate;
-        private System.Windows.Forms.ComboBox cbxClasses;
+        private System.Windows.Forms.ComboBox cbxPackages;
     }
 }

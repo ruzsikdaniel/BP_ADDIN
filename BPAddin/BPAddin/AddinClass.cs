@@ -1,9 +1,6 @@
 ﻿using EA;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BPAddin
@@ -27,6 +24,21 @@ namespace BPAddin
 
         // state variables
         private bool projectOpened = false;
+
+        public override void EA_FileOpen(Repository repository)
+        {
+            string constr = repository.ConnectionString;
+            string projectName = System.IO.Path.GetFileNameWithoutExtension(constr);
+
+            MessageBox.Show("The project " + projectName + " has been opened successfully.");
+
+            Importer imp = new Importer(repository);
+            MessageBox.Show("Importing UI Library...");
+            imp.initUILibrary();
+
+
+            projectOpened = true;
+        }
 
         public override object EA_GetMenuItems(Repository repository, string location, string menuName)
         {
@@ -70,14 +82,7 @@ namespace BPAddin
             }
         }
 
-        public override void EA_FileOpen(Repository repository)
-        {
-            string constr = repository.ConnectionString;
-            string projectName = System.IO.Path.GetFileNameWithoutExtension(constr);
-
-            MessageBox.Show("The project " + projectName + " has been opened successfully.");
-            projectOpened = true;
-        }
+        
 
         private void initMenuArrays()
         {
@@ -102,7 +107,7 @@ namespace BPAddin
                 PackageFinder pf = new PackageFinder();
                 List<EA.Package> packages = pf.get_all_packages(repo);
 
-                CodeGenerator form = new CodeGenerator(repo);
+                CodeGeneratorForm form = new CodeGeneratorForm(repo);
                 form.setLblText("Choose a package containing classes for generating:");
                 form.initPackages(packages);
                 form.ShowDialog();
@@ -128,9 +133,18 @@ namespace BPAddin
         private void handleMenuSettings(EA.Repository repo) { 
             // menuSettings menu logic
 
+            try
+            {
+                SettingsForm as_form = new SettingsForm();
+                // init of text boxes
+                as_form.ShowDialog();
 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
     }
 
     public class PackageFinder

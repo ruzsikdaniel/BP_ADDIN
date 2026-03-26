@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="BPAddin.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="GeneratedDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\class_generation_output</Value>
+    </Setting>
+    <Setting Name="ProjectDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\project</Value>
+    </Setting>
+    <Setting Name="UILibraryDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UI_Library</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
