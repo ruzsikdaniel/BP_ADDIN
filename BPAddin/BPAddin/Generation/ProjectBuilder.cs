@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BPAddin
@@ -12,7 +9,7 @@ namespace BPAddin
     public class ProjectBuilder
     {
         private string generatedSrcDir;  // directory for EA-generated .cs files
-        private string uiLibrarySrcDir;  // directory for UI_Library elements
+        private string uiLibrarySrcDir;  // directory for UILibrary elements
         private string projectDir; // directory for project created from generated files
 
         private List<string> screenNames = new List<string>();
@@ -39,21 +36,7 @@ namespace BPAddin
 
                 runCommand("dotnet", "new winforms -o \"" + projectDir + "\" --force");
 
-                MessageBox.Show(
-                    "projectDir exists: " + Directory.Exists(projectDir) + "\n" +
-                    "tempDir exists: " + Directory.Exists(tempDir) + "\n" +
-                    "projectDir: " + projectDir + "\n" +
-                    "tempDir: " + tempDir
-                );
-
-
                 Directory.Move(projectDir, tempDir);
-
-                MessageBox.Show(
-                    "After Move:\n" +
-                    "projectDir exists: " + Directory.Exists(projectDir) + "\n" +
-                    "tempDir exists: " + Directory.Exists(tempDir)
-                );
 
                 collectUIAssets(tempDir);
                 mergeForm1Designer(tempDir);
@@ -226,7 +209,8 @@ namespace BPAddin
 
             string content =
                 "using System;\r\n" +
-                "using System.Windows.Forms;\r\n\r\n" +
+                "using System.Windows.Forms;\r\n" +
+                "using classes;\r\n\r\n" +
                 "static class Program\r\n{\r\n" +
                 "    [STAThread]\r\n" +
                 "    static void Main()\r\n    {\r\n" +
@@ -290,12 +274,30 @@ namespace BPAddin
             foreach (string file in Directory.GetFiles(outputDir, "*.cs", SearchOption.AllDirectories)){ 
                 string content = File.ReadAllText(file); 
                 
-                content = content.Replace("using BPAddin.UI_Library;\r\n", "");
-                content = content.Replace("using BPAddin.UI_Library;\n", "");
-                content = content.Replace("using BPAddin.UI_LIbrary;\r\n", "");
-                content = content.Replace("using BPAddin.UI_LIbrary;\n", "");
+                content = content.Replace("using BPAddin.UILibrary;\r\n", "");
+                content = content.Replace("using BPAddin.UILibrary;\n", "");
+                content = content.Replace("using BPAddin.UILIbrary;\r\n", "");
+                content = content.Replace("using BPAddin.UILIbrary;\n", "");
+
+                content = System.Text.RegularExpressions.Regex.Replace(
+                    content,
+                    @"public void (on\w+Click)\(\)",
+                    "private void $1(object sender, EventArgs e)"
+                );
+
 
                 File.WriteAllText(file, content);
+            }
+
+
+            string assetsDir = Path.Combine(outputDir, "ui_assets");
+            foreach(string file in Directory.GetFiles(assetsDir, "*.cs", SearchOption.AllDirectories))
+            {
+                string content = File.ReadAllText(file);
+                if (!content.Contains("namespace BPAddin") && !content.Contains("using BPAddin;")) {
+                    content = "using BPAddin;\r\n" + content;
+                    File.WriteAllText(file, content);
+                }
             }
         }
     }

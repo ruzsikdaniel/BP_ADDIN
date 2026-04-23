@@ -29,6 +29,11 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnSync = new System.Windows.Forms.Button();
+            this.tbxUIDiagramPkg = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbxApplicationCDPkg = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnProject = new System.Windows.Forms.Button();
             this.btnUILib = new System.Windows.Forms.Button();
             this.btnGenerated = new System.Windows.Forms.Button();
@@ -40,11 +45,18 @@
             this.lblGenerated = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.btnImportUILib = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnImportUILib);
+            this.panel1.Controls.Add(this.btnSync);
+            this.panel1.Controls.Add(this.tbxUIDiagramPkg);
+            this.panel1.Controls.Add(this.label2);
+            this.panel1.Controls.Add(this.tbxApplicationCDPkg);
+            this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.btnProject);
             this.panel1.Controls.Add(this.btnUILib);
             this.panel1.Controls.Add(this.btnGenerated);
@@ -56,8 +68,50 @@
             this.panel1.Controls.Add(this.lblGenerated);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(776, 235);
+            this.panel1.Size = new System.Drawing.Size(776, 269);
             this.panel1.TabIndex = 0;
+            // 
+            // btnSync
+            // 
+            this.btnSync.Location = new System.Drawing.Point(633, 156);
+            this.btnSync.Name = "btnSync";
+            this.btnSync.Size = new System.Drawing.Size(131, 23);
+            this.btnSync.TabIndex = 14;
+            this.btnSync.Text = "Synchronize UI Model";
+            this.btnSync.UseVisualStyleBackColor = true;
+            this.btnSync.Click += new System.EventHandler(this.btnSync_Click);
+            // 
+            // tbxUIDiagramPkg
+            // 
+            this.tbxUIDiagramPkg.Location = new System.Drawing.Point(201, 130);
+            this.tbxUIDiagramPkg.Name = "tbxUIDiagramPkg";
+            this.tbxUIDiagramPkg.Size = new System.Drawing.Size(563, 20);
+            this.tbxUIDiagramPkg.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(20, 132);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(108, 13);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "UI Diagram package:";
+            // 
+            // tbxApplicationCDPkg
+            // 
+            this.tbxApplicationCDPkg.Location = new System.Drawing.Point(201, 104);
+            this.tbxApplicationCDPkg.Name = "tbxApplicationCDPkg";
+            this.tbxApplicationCDPkg.Size = new System.Drawing.Size(563, 20);
+            this.tbxApplicationCDPkg.TabIndex = 11;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 104);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(177, 13);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "Application Class Diagram package:";
             // 
             // btnProject
             // 
@@ -157,6 +211,16 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // btnImportUILib
+            // 
+            this.btnImportUILib.Location = new System.Drawing.Point(633, 185);
+            this.btnImportUILib.Name = "btnImportUILib";
+            this.btnImportUILib.Size = new System.Drawing.Size(131, 23);
+            this.btnImportUILib.TabIndex = 15;
+            this.btnImportUILib.Text = "Import UI Library";
+            this.btnImportUILib.UseVisualStyleBackColor = true;
+            this.btnImportUILib.Click += new System.EventHandler(this.btnImportUILib_Click);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -187,5 +251,11 @@
         private System.Windows.Forms.Button btnGenerated;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.TextBox tbxApplicationCDPkg;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tbxUIDiagramPkg;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnSync;
+        private System.Windows.Forms.Button btnImportUILib;
     }
 }

@@ -9,7 +9,13 @@
       <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\project</Value>
     </Setting>
     <Setting Name="UILibraryDir" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UI_Library</Value>
+      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UILibrary</Value>
+    </Setting>
+    <Setting Name="AppCDPkg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">class diagram</Value>
+    </Setting>
+    <Setting Name="UIDiagramPkg" Type="System.String" Scope="User">
+      <Value Profile="(Default)">UI Diagram</Value>
     </Setting>
   </Settings>
 </SettingsFile>

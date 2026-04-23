@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using EA;
+using BPAddin.Model;
 
 namespace BPAddin
 {
     public partial class CodeGeneratorForm : Form
     {
         private CodeGenerator cg;
-
+        
         public CodeGeneratorForm(EA.Repository repository)
         {
             InitializeComponent();
@@ -29,17 +29,6 @@ namespace BPAddin
 
             foreach (EA.Package pkg in pkgs){
                 cbxPackages.Items.Add(pkg.Name);
-            }
-        }
-
-        public void initClasses(List<EAClass> classes){
-            cbxPackages.Items.Clear();
-            
-            cg.cls.Clear();
-            cg.cls.AddRange(classes);
-
-            foreach (EAClass c in classes) {
-                cbxPackages.Items.Add(c.clsName);
             }
         }
 
@@ -64,8 +53,7 @@ namespace BPAddin
 
             cg.initScreenClasses(selectedPackage);
 
-            cg.initDesigners(generatedDir);
-
+            
             try {
                 EA.Project proj = cg.repo.GetProjectInterface();
                 string pkgGuid = proj.GUIDtoXML(selectedPackage.PackageGUID);
@@ -74,6 +62,13 @@ namespace BPAddin
                     return;
 
                 proj.GeneratePackage(pkgGuid, "");
+
+                cg.initScreenDesigners(generatedDir);
+                /*
+                MessageBox.Show("Designer files: " + string.Join(", ",
+                Directory.GetFiles(generatedDir, "*.Designer.cs")
+                    .Select(f => Path.GetFileName(f))));
+                */
                 MessageBox.Show("EA generation complete.\n Files: " + generatedDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch(Exception ex)
@@ -89,7 +84,6 @@ namespace BPAddin
             builder.buildProject();
 
             Close();
-            
         }
     }
 }

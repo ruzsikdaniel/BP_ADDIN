@@ -1,13 +1,4 @@
-﻿using EA;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.IO;
 
 namespace BPAddin
 {
@@ -58,21 +49,20 @@ namespace BPAddin
 
             importUILibrary();
             populateDiagram(uiLibPkg, uiDiagram);
+            repository.RefreshModelView(0);
         }
 
         private EA.Package findOrCreatePackage(string pkgName) {
             EA.Package root = (EA.Package)repository.Models.GetAt(0);
 
             // find package in root
-
-
             for(short i = 0; i < root.Packages.Count; i++)
             {
                 EA.Package pkg = (EA.Package)root.Packages.GetAt(i);
 
                 if(pkg.Name == pkgName)
                 {
-                    MessageBox.Show("Package found: " + pkgName);
+                    //MessageBox.Show("Package found: " + pkgName);
                     // delete existing package
                     root.Packages.DeleteAt(i, true);
                     root.Packages.Refresh();
@@ -81,8 +71,7 @@ namespace BPAddin
             }
 
             // create package to root
-
-            MessageBox.Show("Creating new package - " + pkgName + " as type " + uiLibPkgType);
+            //MessageBox.Show("Creating new package - " + pkgName + " as type " + uiLibPkgType);
             EA.Package pkgNew = (EA.Package)root.Packages.AddNew(uiLibName, uiLibPkgType);
             pkgNew.Update();
 

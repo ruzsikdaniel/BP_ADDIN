@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BPAddin", "BPAddin\BPAddin.csproj", "{53BD4088-0243-49C3-9019-C9C9434DD46D}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BPAddinInstaller", "BPAddinInstaller\BPAddinInstaller.vdproj", "{0734B0B5-4D62-9413-B6A5-3FE56E4EF8DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,8 @@ Global
 		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53BD4088-0243-49C3-9019-C9C9434DD46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0734B0B5-4D62-9413-B6A5-3FE56E4EF8DE}.Debug|Any CPU.ActiveCfg = Debug
+		{0734B0B5-4D62-9413-B6A5-3FE56E4EF8DE}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

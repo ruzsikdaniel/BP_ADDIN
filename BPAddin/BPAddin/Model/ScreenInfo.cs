@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BPAddin
+namespace BPAddin.model
 {
-    public class EAClass
+    public class ScreenInfo
     {
         public string clsName { get; set; }
         public string pkgName { get; set; }

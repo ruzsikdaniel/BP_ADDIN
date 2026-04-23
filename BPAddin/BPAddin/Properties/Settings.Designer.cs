@@ -49,13 +49,37 @@ namespace BPAddin.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\_School\\\\BP\\\\funkcny_prototyp\\\\BP_ADDIN\\\\BPAddin\\\\BPAddin\\\\UI_Library")]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\_School\\\\BP\\\\funkcny_prototyp\\\\BP_ADDIN\\\\BPAddin\\\\BPAddin\\\\UILibrary")]
         public string UILibraryDir {
             get {
                 return ((string)(this["UILibraryDir"]));
             }
             set {
                 this["UILibraryDir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("class diagram")]
+        public string AppCDPkg {
+            get {
+                return ((string)(this["AppCDPkg"]));
+            }
+            set {
+                this["AppCDPkg"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("UI Diagram")]
+        public string UIDiagramPkg {
+            get {
+                return ((string)(this["UIDiagramPkg"]));
+            }
+            set {
+                this["UIDiagramPkg"] = value;
             }
         }
     }

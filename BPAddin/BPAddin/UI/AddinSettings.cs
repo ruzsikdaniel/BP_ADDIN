@@ -8,6 +8,8 @@ namespace BPAddin
     {
         private struct DirSetting
         {
+
+            // change structure to accomodate different input types, not just TextBox (combobox)
             public TextBox tbx;
             public string description;
             public Func<string> get;
@@ -15,9 +17,11 @@ namespace BPAddin
         }
 
         private List<DirSetting> dirSettings;
+        private EA.Repository repo;
 
-        public SettingsForm()
+        public SettingsForm(EA.Repository repository)
         {
+            repo = repository;
             InitializeComponent();
             initDirSettings();
         }
@@ -49,6 +53,22 @@ namespace BPAddin
                 set = v => Properties.Settings.Default.ProjectDir = v
             });
 
+            dirSettings.Add(new DirSetting
+            {
+                tbx = tbxApplicationCDPkg,
+                description = "",
+                get = () => Properties.Settings.Default.AppCDPkg,
+                set = v => Properties.Settings.Default.AppCDPkg = v
+            });
+
+            dirSettings.Add(new DirSetting
+            {
+                tbx = tbxUIDiagramPkg,
+                description = "",
+                get = () => Properties.Settings.Default.UIDiagramPkg,
+                set = v => Properties.Settings.Default.UIDiagramPkg = v
+            });
+
             initTbx();
         }
         private void initTbx()
@@ -78,7 +98,7 @@ namespace BPAddin
                     s.tbx.Text = choice;    // update appropriate textbox
                     s.set(choice);          // set appropriate setting to choice value
 
-                    MessageBox.Show(s.description + " changed to: " + choice);
+                    //MessageBox.Show(s.description + " changed to: " + choice);
                 }
             }
         }
@@ -112,6 +132,10 @@ namespace BPAddin
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            foreach (var s in dirSettings) { 
+                s.set(s.tbx.Text);
+            }
+
             Properties.Settings.Default.Save();
             this.Close();
         }
@@ -119,6 +143,19 @@ namespace BPAddin
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void btnSync_Click(object sender, EventArgs e)
+        {
+            UIModelSync uisync = new UIModelSync(repo);
+            string uiDiagramText = tbxUIDiagramPkg.Text;
+            string appCDText = tbxApplicationCDPkg.Text;
+            uisync.syncAll(uiDiagramText, appCDText);
+        }
+
+        private void btnImportUILib_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

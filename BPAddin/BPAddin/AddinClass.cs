@@ -3,39 +3,59 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using static BPAddin.util.EABase;
+
 namespace BPAddin
 {   public abstract class AddinBase
     {
         public virtual object EA_GetMenuItems(Repository repository, string location, string menuName) { return null; }
         public virtual void EA_MenuClick(Repository repository, string location, string menuName, string itemName) { }
         public virtual void EA_FileOpen(Repository repository) { }
+
+        // not a valid EA event
+        public virtual void EA_OnPostSaveDiagram(Repository repository, int diagramID) { }
+
+        public virtual bool EA_OnPostNewElement(EA.Repository repository, EA.EventProperties info) { return false; }
     }
 
     public class AddinClass : AddinBase
     {
         // menu elements here
-        private const string menuHeader = "-&TestGenerate";
+        private const string menuHeader = "-&BPAddin";
         private const string menuGenerateCode = "&Generate Code";
         private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
         private const string menuSettings = "&Add-in Settings";
 
+        private EA.Repository repo;
+
         // array of sub-menu elements for particular root menu element
-        private List<string> menus_menuHeader = new List<string>();
+        private List<string> menuItems = new List<string>();
 
         // state variables
         private bool projectOpened = false;
 
         public override void EA_FileOpen(Repository repository)
         {
+            repo = repository;
+
             string constr = repository.ConnectionString;
             string projectName = System.IO.Path.GetFileNameWithoutExtension(constr);
 
             MessageBox.Show("The project " + projectName + " has been opened successfully.");
 
-            Importer imp = new Importer(repository);
-            MessageBox.Show("Importing UI Library...");
-            imp.initUILibrary();
+            
+            if(MessageBox.Show("Do you want to import the UI Library?", "BPAddin", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                Importer imp = new Importer(repository);
+                imp.initUILibrary();
+            }
 
+            UIModelSync uiModelSync = new UIModelSync(repository);
+
+            string uiPkgName = Properties.Settings.Default.UIDiagramPkg;
+            string appPkgName = Properties.Settings.Default.AppCDPkg;
+
+            uiModelSync.syncAll(uiPkgName, appPkgName);
 
             projectOpened = true;
         }
@@ -51,17 +71,17 @@ namespace BPAddin
                 case "":
                     return menuHeader;
                 case menuHeader:
-                    return menus_menuHeader.ToArray();
+                    return menuItems.ToArray();
                 // each case here represents a root menu element
                 default:
                     return null;
             }
         }
 
-        public override void EA_MenuClick(Repository repo, string location, string menuName, string itemName)
+        public override void EA_MenuClick(Repository repository, string location, string menuName, string itemName)
         {
             if (!projectOpened) {
-                MessageBox.Show("Projekt nie je otvorený.", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("The project is not opened!", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -70,42 +90,53 @@ namespace BPAddin
             switch (itemName)
             {
                 case menuGenerateCode:
-                    handleMenuGenerateCode(repo);
+                    handleMenuGenerateCode();
                     break;
                 case menuStereotypeInit:
-                    handleMenuStereotypeInit(repo);
+                    handleMenuStereotypeInit();
                     break;
                 case menuSettings:
-                    handleMenuSettings(repo);
+                    handleMenuSettings();
                     break;
                 default: return;
             }
         }
 
-        
+        public override void EA_OnPostSaveDiagram(Repository repository, int diagramID)
+        {
+            EA.Diagram diagram = repository.GetDiagramByID(diagramID);
+            //if (diagram.Type != "Win32 User Interface") 
+            //    return;
+
+            MessageBox.Show("Diagram saved!");
+        }
+
+        public override bool EA_OnPostNewElement(Repository repository, EventProperties info)
+        {
+            // fires when a new element is created
+            int elementID = int.Parse(info.Get("ElementId").Value.ToString());
+            EA.Element el = repository.GetElementByID(elementID);
+            //MessageBox.Show("New Element: " + el.Name + ", Stereotype: " + el.Stereotype);
+            return false;
+        }
+
 
         private void initMenuArrays()
         {
-            // menu_menuHeader - main menu
-            clearMenuArray(menus_menuHeader);
-            menus_menuHeader.Add(menuGenerateCode);
-            menus_menuHeader.Add(menuStereotypeInit);
-            menus_menuHeader.Add(menuSettings);
+            menuItems.Clear();
+
+            menuItems.Add(menuGenerateCode);
+            //menus_menuHeader.Add(menuStereotypeInit);
+            menuItems.Add(menuSettings);
 
             // add menu elements to different root menus
             // ...
         }
 
-        private void clearMenuArray(List<string> menuArray)
-        {
-            menuArray.Clear();
-        }
-
-        private void handleMenuGenerateCode(EA.Repository repo) {
+        private void handleMenuGenerateCode() {
             try
             {
-                PackageFinder pf = new PackageFinder();
-                List<EA.Package> packages = pf.get_all_packages(repo);
+                List<EA.Package> packages = findAllPackages(repo);
 
                 CodeGeneratorForm form = new CodeGeneratorForm(repo);
                 form.setLblText("Choose a package containing classes for generating:");
@@ -118,7 +149,7 @@ namespace BPAddin
             }
         }
 
-        private void handleMenuStereotypeInit(EA.Repository repo) {
+        private void handleMenuStereotypeInit() {
             try
             {
                 UILibraryInit init = new UILibraryInit();
@@ -130,12 +161,12 @@ namespace BPAddin
             }
         }
 
-        private void handleMenuSettings(EA.Repository repo) { 
+        private void handleMenuSettings() { 
             // menuSettings menu logic
 
             try
             {
-                SettingsForm as_form = new SettingsForm();
+                SettingsForm as_form = new SettingsForm(repo);
                 // init of text boxes
                 as_form.ShowDialog();
 
@@ -145,23 +176,22 @@ namespace BPAddin
                 MessageBox.Show("Error:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-    }
 
-    public class PackageFinder
-    {
-        public List<EA.Package> get_all_packages(Repository repo) { 
-            List<EA.Package> result = new List<EA.Package>();
-
-            foreach (EA.Package model in repo.Models)
-                collect_packages(model, result);
-            return result;
+        [System.Runtime.InteropServices.ComRegisterFunction]
+        public static void RegisterFunction(Type t)
+        {
+            Microsoft.Win32.Registry.CurrentUser
+                .CreateSubKey(@"Software\Sparx Systems\EAAddins64\BPAddin")
+                .SetValue("", "BPAddin.AddinClass");
         }
 
-        private void collect_packages(EA.Package pkg, List<EA.Package> result) { 
-            result.Add(pkg);
-            foreach(EA.Package sub in pkg.Packages)
-                collect_packages(sub, result);
+        [System.Runtime.InteropServices.ComUnregisterFunction]
+        public static void UnregisterFunction(Type t)
+        {
+            Microsoft.Win32.Registry.CurrentUser
+                .DeleteSubKey(@"Software\Sparx Systems\EAAddins64\BPAddin", false);
         }
-
     }
+
+    
 }

@@ -18,14 +18,13 @@ namespace BPAddin
             this.ForeColor = Color.Black;
             this.Font = new Font("Segoe UI", 9f);
             this.DropDownStyle = ComboBoxStyle.DropDownList;
-
+            this.SelectedIndexChanged += OnSelectedIndexChanged;
+            this.TextChanged += OnTextChanged;
         }
-        /*
-        public string classname => "ComboBox";
-        public string ea_stereotype => "win32ComboBox";
-        public string winforms_type => "System.Windows.Forms.ComboBox";
-        */
+        protected virtual void OnSelectedIndexChanged(object sender, EventArgs e) { OnSelectedIndexChanged(); }
+        protected virtual void OnSelectedIndexChanged() { }
 
-        public virtual void onSelectionChanged() { }
+        protected virtual void OnTextChanged(object sender, EventArgs e) { OnTextChanged(); }
+        protected virtual void OnTextChanged() { }
     }
 }

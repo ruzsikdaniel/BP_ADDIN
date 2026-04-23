@@ -17,12 +17,17 @@ namespace BPAddin
             this.ForeColor = Color.Black;
             this.Font = new Font("Segoe UI", 9f);
             this.Text = "Button";
+            this.Click += OnClick;
         }
-        /*
-        public string classname => "Button";
-        public string ea_stereotype => "win32Button";
-        public string winforms_type => "System.Windows.Forms.Button";*/
 
-        public virtual void onClick() { }
+        protected virtual void OnClick(object sender, System.EventArgs e)
+        {
+            OnClick();
+        }
+
+        protected virtual void OnClick()
+        {
+            // override this method when instantiating
+        }
     }
 }

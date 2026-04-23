@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using BPAddin.Model;
+
 namespace BPAddin
 {
     public class DesignerBuilder
     {
-        public string build(string screenName, List<UIComponentInfo> components)
+        public string build(string screenName, List<UIComponentInfo> components, string namespaceName, List<String> screenMethods)
         {
             var scrSize = components.FirstOrDefault(c => c.name == "__screen__");
             var comps = components.Where(c => c.name != "__screen__").ToList();
@@ -19,6 +21,8 @@ namespace BPAddin
             sb.AppendLine("using System.Drawing;");
             sb.AppendLine("using System.Windows.Forms;");
             sb.AppendLine();
+            sb.AppendLine("namespace " + namespaceName);
+            sb.AppendLine("{");
             sb.AppendLine("partial class " + screenName);
             sb.AppendLine("{");
             sb.AppendLine("    private System.ComponentModel.IContainer components = null;");
@@ -31,12 +35,21 @@ namespace BPAddin
             sb.AppendLine("    }");
             sb.AppendLine();
             sb.AppendLine("    private void InitializeComponent()");
-            sb.AppendLine("    {");
+            sb.AppendLine("    {"); 
 
             // 1) instances of screen components
-            foreach (var c in comps)
-                sb.AppendLine("        this." + c.name + " = new BPAddin." + c.typeName + "();");
+            foreach (var c in comps) { 
+                sb.AppendLine("        this." + c.name + " = new " + c.name + "();");
+                if (c.typeName == "UIButton")
+                {
+                    string handlerName = "on" + c.name + "Click";
+                    if (screenMethods.Contains(handlerName))
+                    {
+                        sb.AppendLine("        this." + c.name + ".Click += new System.EventHandler(this." + handlerName + ");");
+                    }
 
+                }        
+            }
             sb.AppendLine("        this.SuspendLayout();");
             sb.AppendLine();
 
@@ -68,6 +81,7 @@ namespace BPAddin
             foreach (var c in comps)
                 sb.AppendLine("    private BPAddin." + c.typeName + " " + c.name + ";");
 
+            sb.AppendLine("}");
             sb.AppendLine("}");
 
             return sb.ToString();

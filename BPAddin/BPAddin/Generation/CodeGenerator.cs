@@ -1,23 +1,20 @@
 ﻿using EA;
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using static BPAddin.util.EABase;
+using static BPAddin.util.EAMacros;
+using BPAddin.Model;
 
 namespace BPAddin
 {
-
     public class CodeGenerator
     {
         public Repository repo;
 
-        public List<EAClass> cls = new List<EAClass>();
-        public List<Package> packages = new List<EA.Package>();
-        public EA.Element uiScreen = null;
+        public EA.Element uiScreen; 
+        public List<EA.Package> packages = new List<Package>();
         public List<EA.Element> screens = new List<EA.Element>();
 
         public CodeGenerator(EA.Repository repo)
@@ -25,26 +22,12 @@ namespace BPAddin
             this.repo = repo;
         }
 
-        public void setPartialToScreens(EA.Element el)
-        {
-            // skip if "partial" already exists
-            foreach (EA.TaggedValue tagged in el.TaggedValues)
-            {
-                if (tagged.Name == "partial")
-                    return;
-            }
-
-            // create new tagged value for partial keyword
-            EA.TaggedValue tv = (EA.TaggedValue)el.TaggedValues.AddNew("partial", "");
-
-            tv.Value = "true";
-            tv.Update();
-
-            el.TaggedValues.Refresh();
-        }
-
         public void setInitConstructors(EA.Element el)
         {
+            // initialize the constructor for an element
+            if (el.Type != ELTYPE_CLASS)
+                return;
+
             EA.Method constructor = null;
             foreach (EA.Method m in el.Methods)
             {
@@ -84,20 +67,24 @@ namespace BPAddin
 
             foreach (EA.Element el in screens)
             {
-                setPartialToScreens(el);
+                setTaggedValue(el, "partial", "true");  // (new) tagged value 'partial' - 'true'
                 setInitConstructors(el);
             }
         }
 
         public void initScreensArray(EA.Package pkg)
         {
+            // save all eligible screen classes into local array
+            // - has type Class
+            // - has Generalization to the UILibrary element UIScreen
+
             foreach (EA.Element el in pkg.Elements)
             {
-                if (el.Type == "Class")
+                if (el.Type == ELTYPE_CLASS)
                 {
                     foreach (EA.Connector connector in el.Connectors)
                     {
-                        if ((connector.Type == "Generalization" && connector.SupplierID == uiScreen.ElementID))
+                        if ((connector.Type == CONN_GENERALIZATION && connector.SupplierID == uiScreen.ElementID))
                         {
                             screens.Add(el);
                             break;
@@ -113,16 +100,28 @@ namespace BPAddin
             }
         }
 
-        public void initDesigners(string generatedDir)
+        public void initScreenDesigners(string generatedDir)
         {
+            // initialize the *.Designer.cs files of each screen
 
-            UIComponentReader uireader = new UIComponentReader();
+            UIComponentReader uireader = new UIComponentReader(repo);
             DesignerBuilder dfbuilder = new DesignerBuilder();
 
             foreach (EA.Element screen in screens)
             {
+                List<string> methods = new List<string>();
+                foreach(EA.Element child in screen.Elements)
+                {
+                    // save the screen's Activity diagram as its method
+                    if(child.Type == ELTYPE_ACTIVITY)
+                        methods.Add(child.Name);
+                }
+
                 List<UIComponentInfo> components = uireader.getComponents(repo, screen);
-                string designerContent = dfbuilder.build(screen.Name, components);
+
+
+                string namespaceName = repo.GetPackageByID(screen.PackageID).Name;
+                string designerContent = dfbuilder.build(screen.Name, components, namespaceName, methods);
 
                 string designerPath = Path.Combine(generatedDir, screen.Name + ".Designer.cs");
 
@@ -137,7 +136,7 @@ namespace BPAddin
 
             foreach (EA.Package model in repo.Models)
             {
-                EA.Element el = findElementByName(model, "UIScreen");
+                EA.Element el = findElementByName(model, UILIB_SCREEN);
                 if (el != null)
                 {
                     this.uiScreen = el;
@@ -146,31 +145,16 @@ namespace BPAddin
             }
         }
 
-        private EA.Element findElementByName(EA.Package pkg, string name)
-        {
-            foreach (EA.Element el in pkg.Elements)
-            {
-                if (el.Name == name)
-                    return el;
-            }
-
-            foreach (EA.Package sub in pkg.Packages)
-            {
-                EA.Element el = findElementByName(sub, name);
-                if (el != null)
-                    return el;
-            }
-            return null;
-        }
+        
 
         public void setPackageFilepaths(EA.Package pkg, string dir)
         {
             foreach (EA.Element el in pkg.Elements)
             {
-                if (el.Type == "Class")
+                if (el.Type == ELTYPE_CLASS)
                 {
                     string filepath = Path.Combine(dir, el.Name + ".cs");
-                    el.Gentype = "C#";
+                    el.Gentype = GENTYPE_CSHARP;
                     el.Genfile = filepath;
                     el.Update();
                 }

@@ -18,14 +18,9 @@ namespace BPAddin
             this.ForeColor = Color.Black;
             this.Font = new Font("Segoe UI", 9f);
             this.Checked = false;
+            this.CheckedChanged += OnCheckedChanged;
         }
-
-        /*
-        public string classname => "CheckBox";
-        public string ea_stereotype => "win32CheckBox";
-        public string winforms_type => "System.Windows.Forms.CheckBox";
-        */
-
-        public virtual void onCheckedChanged() { }
+        protected virtual void OnCheckedChanged(object sender, EventArgs e) { OnCheckedChanged(); }
+        protected virtual void OnCheckedChanged() { }
     }
 }
