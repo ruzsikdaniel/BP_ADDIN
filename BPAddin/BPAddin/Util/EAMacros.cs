@@ -14,7 +14,13 @@
         public const string STYPE_WINDIALOG = "win32Dialog";
 
         public const string UILIB_PKGNAME = "UI Library";
+        public const string UILIB_PKGTYPE = "Package";
         public const string UILIB_SCREEN = "UIScreen";
+        public const string UILIB_DIAGRAMTYPE = "Class";
+
+
+
+        public const string uiLibName = "UI Library";
 
     }
 }

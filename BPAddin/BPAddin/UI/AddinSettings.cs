@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using static BPAddin.util.EABase;
+using BPAddin.Util;
+
 namespace BPAddin
 {
     public partial class SettingsForm : Form
     {
         private struct DirSetting
         {
-
-            // change structure to accomodate different input types, not just TextBox (combobox)
             public TextBox tbx;
             public string description;
             public Func<string> get;
@@ -30,46 +31,30 @@ namespace BPAddin
         {
             this.dirSettings = new List<DirSetting>();
 
+            tbxUILib.Text = AddinPaths.UILibraryPath;
+            tbxUILib.Enabled = false;
+
             dirSettings.Add(new DirSetting {
                 tbx = tbxGenerated,
                 description = "Select Generated Source Directory",
-                get = () => Properties.Settings.Default.GeneratedDir,
+                get = () => string.IsNullOrEmpty(Properties.Settings.Default.GeneratedDir) 
+                    ? AddinPaths.DefaultGeneratedDir 
+                    : Properties.Settings.Default.GeneratedDir,
                 set = v => Properties.Settings.Default.GeneratedDir = v
-            });
-
-            dirSettings.Add(new DirSetting
-            {
-                tbx = tbxUILib,
-                description = "Select UI Library Directory",
-                get = () => Properties.Settings.Default.UILibraryDir,
-                set = v => Properties.Settings.Default.UILibraryDir = v
             });
 
             dirSettings.Add(new DirSetting
             {
                 tbx = tbxProject,
                 description = "Select Project Directory",
-                get = () => Properties.Settings.Default.ProjectDir,
+                get = () => string.IsNullOrEmpty(Properties.Settings.Default.ProjectDir)
+                    ? AddinPaths.DefaultProjectDir
+                    : Properties.Settings.Default.ProjectDir,
                 set = v => Properties.Settings.Default.ProjectDir = v
             });
 
-            dirSettings.Add(new DirSetting
-            {
-                tbx = tbxApplicationCDPkg,
-                description = "",
-                get = () => Properties.Settings.Default.AppCDPkg,
-                set = v => Properties.Settings.Default.AppCDPkg = v
-            });
-
-            dirSettings.Add(new DirSetting
-            {
-                tbx = tbxUIDiagramPkg,
-                description = "",
-                get = () => Properties.Settings.Default.UIDiagramPkg,
-                set = v => Properties.Settings.Default.UIDiagramPkg = v
-            });
-
             initTbx();
+            initPackageCbx();
         }
         private void initTbx()
         {
@@ -77,6 +62,24 @@ namespace BPAddin
             {
                 s.tbx.Text = cleanDoubleBacklines(s.get());
             }
+        }
+
+        private void initPackageCbx() {
+            List<EA.Package> packages = new List<EA.Package>();
+
+            cbxAppCDPkg.Items.Clear();
+            cbxUIDiagramPkg.Items.Clear();
+
+            packages.AddRange(findAllPackages(repo));
+
+            foreach (EA.Package pkg in packages)
+            {
+                cbxAppCDPkg.Items.Add(pkg.Name);
+                cbxUIDiagramPkg.Items.Add(pkg.Name);
+            }
+
+            cbxAppCDPkg.Text = Properties.Settings.Default.AppCDPkg;
+            cbxUIDiagramPkg.Text = Properties.Settings.Default.UIDiagramPkg;
         }
 
         private void browseDirSetting(DirSetting s)
@@ -118,16 +121,9 @@ namespace BPAddin
             browseDirSetting(dirSettings[0]);
         }
 
-        
-
-        private void btnUILib_Click(object sender, EventArgs e)
-        {
-            browseDirSetting(dirSettings[1]);
-        }
-
         private void btnProject_Click(object sender, EventArgs e)
         {
-            browseDirSetting(dirSettings[2]);
+            browseDirSetting(dirSettings[1]);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -135,6 +131,9 @@ namespace BPAddin
             foreach (var s in dirSettings) { 
                 s.set(s.tbx.Text);
             }
+
+            Properties.Settings.Default.AppCDPkg = cbxAppCDPkg.Text;
+            Properties.Settings.Default.UIDiagramPkg = cbxUIDiagramPkg.Text;
 
             Properties.Settings.Default.Save();
             this.Close();
@@ -148,14 +147,35 @@ namespace BPAddin
         private void btnSync_Click(object sender, EventArgs e)
         {
             UIModelSync uisync = new UIModelSync(repo);
-            string uiDiagramText = tbxUIDiagramPkg.Text;
-            string appCDText = tbxApplicationCDPkg.Text;
+            string uiDiagramText = cbxUIDiagramPkg.Text;
+            string appCDText = cbxAppCDPkg.Text;
+
             uisync.syncAll(uiDiagramText, appCDText);
         }
 
         private void btnImportUILib_Click(object sender, EventArgs e)
         {
+            string uiLibPath = AddinPaths.UILibraryPath;
 
+            if (!System.IO.Directory.Exists(uiLibPath) || System.IO.Directory.GetFiles(uiLibPath, "UI*.cs").Length == 0) {
+                MessageBox.Show("UI Library not found at path: \n" + uiLibPath +
+                    "\n\nPlease reinstall BPAddin.",
+                    "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                Importer imp = new Importer(repo);
+                imp.initUILibrary(uiLibPath);
+                MessageBox.Show("UI Library imported successfully.", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error during import:\n\n" + ex.Message, "BPAddin - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
+        
     }
 }

@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using BPAddin.Model;
 using static BPAddin.util.EABase;
+using static BPAddin.util.EAMacros;
 
 namespace BPAddin
 {
@@ -83,15 +84,14 @@ namespace BPAddin
 
         private EA.Diagram findUIDiagram(EA.Repository repo)
         {
+            string uiPkgName = Properties.Settings.Default.UIDiagramPkg;
             foreach (EA.Package model in repo.Models)
             {
-                EA.Diagram d = findDiagramByName(model, "UI Diagram");
+                EA.Diagram d = findDiagramByName(model, uiPkgName);
                 if (d != null) return d;
             }
             return null;
         }
-
-        
 
         private EA.Element findDialogForScreen(EA.Repository repo, EA.Diagram diagram, string screenClassName)
         {
@@ -100,7 +100,7 @@ namespace BPAddin
             foreach (EA.DiagramObject dobj in diagram.DiagramObjects)
             {
                 EA.Element el = repo.GetElementByID(dobj.ElementID);
-                if (el == null || el.Stereotype != "win32Dialog") continue;
+                if (el == null || el.Stereotype != STYPE_WINDIALOG) continue;
 
                 if (firstScreen == null)
                     firstScreen = el;
@@ -137,7 +137,7 @@ namespace BPAddin
 
             foreach (EA.Connector connector in el.Connectors)
             {
-                if (connector.Type != "Generalization") continue;
+                if (connector.Type != CONN_GENERALIZATION) continue;
                 if (connector.ClientID != el.ElementID) continue;
 
                 EA.Element parent = repo.GetElementByID(connector.SupplierID);

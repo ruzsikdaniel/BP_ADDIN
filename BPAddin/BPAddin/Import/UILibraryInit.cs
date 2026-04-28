@@ -1,17 +1,13 @@
 ﻿using EA;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using static BPAddin.util.EAMacros;
 
 namespace BPAddin
 {
     public class UILibraryInit
     {
-        private const string UI_EL_STEREOTYPE = "UIElement";
-
         public void initUIElementStereotype(Repository repository)
         {
             object item;
@@ -23,16 +19,6 @@ namespace BPAddin
             }
 
             EA.Package selected = (EA.Package)item;
-
-                /*
-            List<EA.Package> allPackages = new List<EA.Package>();
-            foreach (EA.Package model in repository.Models)
-            {
-                collectPackages(model, allPackages);
-            }
-
-            EA.Package selected = showPackageSelector(allPackages);
-                */
             if (selected == null)
             {
                 MessageBox.Show("No package chosen.", "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -53,9 +39,9 @@ namespace BPAddin
             int count = 0;
             foreach (EA.Element el in pkg.Elements)
             {
-                if (el.Type == "Class")
+                if (el.Type == ELTYPE_CLASS)
                 {
-                    el.Stereotype = UI_EL_STEREOTYPE;
+                    el.Stereotype = STYPE_UIELEMENT;
                     el.Update();
                     count++;
                 }

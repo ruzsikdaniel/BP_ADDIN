@@ -85,17 +85,17 @@ namespace BPAddin.util
             List<EA.Package> result = new List<EA.Package>();
 
             foreach (EA.Package model in repo.Models)
-                result.Add(collectPackage(model));
+                collectPackage(model, result);
             return result;
         }
 
-        private static EA.Package collectPackage(EA.Package pkg)
+        private static void collectPackage(EA.Package pkg, List<EA.Package> result)
         {
+            result.Add(pkg);
             foreach (EA.Package sub in pkg.Packages)
             {
-                collectPackage(sub);
+                collectPackage(sub, result);
             }
-            return pkg;
         }
     }
 }

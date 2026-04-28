@@ -1,11 +1,13 @@
-﻿using EA;
+﻿using BPAddin.Model;
+using EA;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Web;
 using System.Windows.Forms;
-
 using static BPAddin.util.EABase;
 using static BPAddin.util.EAMacros;
-using BPAddin.Model;
 
 namespace BPAddin
 {
@@ -116,7 +118,7 @@ namespace BPAddin
                     if(child.Type == ELTYPE_ACTIVITY)
                         methods.Add(child.Name);
                 }
-
+                
                 List<UIComponentInfo> components = uireader.getComponents(repo, screen);
 
 
@@ -164,6 +166,80 @@ namespace BPAddin
             {
                 setPackageFilepaths(sub, dir);
             }
+        }
+
+        public List<string> validateAppModelNaming(List<EA.Element> screens, EA.Package appPkg)
+        {
+            List<string> errors = new List<string>();
+
+            // 0) ollect names of all components in application model
+            HashSet<string> componentNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (EA.Element el in appPkg.Elements)
+                if (el.Type == ELTYPE_CLASS && el.Stereotype == STYPE_UIELEMENT)
+                    componentNames.Add(el.Name);
+
+
+            foreach (EA.Element el in appPkg.Elements)
+            {
+                // invalid - ButtonSave
+                // correct - buttonSave
+                if (el.Type == ELTYPE_CLASS && char.IsUpper(el.Name[0]))
+                {
+                    errors.Add("Class '" + el.Name + "' - name must start with lower case letter (format: <className>)");
+                }
+
+                // check if the current element is a valid screen
+                if (screens.Any(s => s.Name == el.Name))
+                {
+                    foreach (EA.Element child in el.Elements)
+                    {
+                        //MessageBox.Show("child: " + child.Name + " | Type: " + child.Type);
+
+
+                        // we only need Activity elements of given screen class
+                        if (child.Type != ELTYPE_ACTIVITY)
+                            continue;
+
+                        string actName = child.Name;
+                        bool matched = false;
+
+                        // format: on<className><eventName>
+                        // 1) check if name of Activity starts with "on"
+
+                        if (actName.StartsWith("on"))
+                        {
+                            string remainder = actName.Substring(2);
+                            foreach (string componentName in componentNames)
+                            {
+                                // 2) check if name contains a valid className
+                                if (remainder.StartsWith(componentName, StringComparison.Ordinal))
+                                {
+                                    // valid className found - cut off the remainder of the actName (should contain only eventName)
+                                    string eventCandidate = remainder.Substring(componentName.Length);
+
+                                    // 3) check if the remainder string contains <eventName>
+                                    bool validEvent = EventMap.componentEvents.Values.
+                                        Any(ev => ev.eventName.Equals(eventCandidate, StringComparison.OrdinalIgnoreCase));
+
+                                    if (validEvent)
+                                    {
+                                        matched = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!matched)
+                        {
+                            errors.Add("Activity '" + actName + "' for '" + el.Name +
+                                "' - incorrect name formatting (format 'on<className><eventName>'");
+                        }
+                    }
+                }
+            }
+
+            return errors;
         }
 
     }

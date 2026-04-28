@@ -45,6 +45,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_77B91DFA1CE8426AB3272DA0F6362C6F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7A73DA7FFDE54F8D9B4B111000C45DC4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -70,13 +76,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_A7075ACF0E390953EAC07D9B27182214"
+        "OwnerKey" = "8:_7A73DA7FFDE54F8D9B4B111000C45DC4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_7A73DA7FFDE54F8D9B4B111000C45DC4"
+        "OwnerKey" = "8:_A7075ACF0E390953EAC07D9B27182214"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -97,6 +103,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -113,6 +135,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -240,6 +270,26 @@
             {
             "SourcePath" = "8:..\\BPAddin\\UILibrary\\UIScreen.cs"
             "TargetName" = "8:UIScreen.cs"
+            "Tag" = "8:"
+            "Folder" = "8:_24A5A6DBA70F40A788D616CF4BC6940A"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_77B91DFA1CE8426AB3272DA0F6362C6F"
+            {
+            "SourcePath" = "8:..\\BPAddin\\UILibrary\\UIListBox.cs"
+            "TargetName" = "8:UIListBox.cs"
             "Tag" = "8:"
             "Folder" = "8:_24A5A6DBA70F40A788D616CF4BC6940A"
             "Condition" = "8:"
@@ -417,7 +467,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BPAddin"
         "ProductCode" = "8:{5DC51BCA-A89E-4266-82D1-A51B006CB370}"
-        "PackageCode" = "8:{2CB74A57-2BC8-4D1A-B532-66E7E67B6562}"
+        "PackageCode" = "8:{483E85D8-2FA2-4AB5-ADBB-2321520DD623}"
         "UpgradeCode" = "8:{A0452970-0484-4D25-8AC7-41F95B940913}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

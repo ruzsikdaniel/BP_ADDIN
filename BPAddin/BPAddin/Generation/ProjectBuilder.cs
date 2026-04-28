@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Policy;
 using System.Windows.Forms;
 
 namespace BPAddin
@@ -14,7 +15,10 @@ namespace BPAddin
 
         private List<string> screenNames = new List<string>();
 
-        public ProjectBuilder(string generatedSrcDir, string uiLibrarySrcDir, string projectDir)
+        private Process prototypeProcess;
+        private string programNamespace = "";
+
+        public void configure(string generatedSrcDir, string uiLibrarySrcDir, string projectDir)
         {
             this.generatedSrcDir = generatedSrcDir;
             this.uiLibrarySrcDir = uiLibrarySrcDir;
@@ -25,11 +29,22 @@ namespace BPAddin
             this.screenNames = names;
         }
 
+        public void setProgramNamespace(string ns)
+        {
+            this.programNamespace = ns;
+        }
+
         public void buildProject()
         {
             string tempDir = projectDir + "_temp";
             try
             {
+                if (prototypeProcess != null && !prototypeProcess.HasExited)
+                {
+                    prototypeProcess.Kill();
+                    prototypeProcess.WaitForExit();
+                }
+
                 if (Directory.Exists(projectDir)) {
                     Directory.Delete(projectDir, true );
                 }
@@ -57,7 +72,7 @@ namespace BPAddin
                 if (exePath != null)
                 {
                     if(MessageBox.Show("Compilation successful!\n\n.exe file:\n" + exePath + "\n\nDo you want to launch the .exe file?", "BPAddin – Success", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                        Process.Start(exePath);
+                        launchPrototype(exePath);
                 }
                 else{
                     MessageBox.Show("Compilation has finished, .exe was not found.\nPlease refer to: " + projectDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -73,6 +88,26 @@ namespace BPAddin
                 MessageBox.Show("Error during compilation:\n\n" + ex.Message, "BPAddin – Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void launchPrototype(string exePath)
+        {
+            if (prototypeProcess != null && !prototypeProcess.HasExited)
+            {
+                if (MessageBox.Show("Prototype is already running. Close it and launch new?",
+                    "BPAddin", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    prototypeProcess.Kill();
+                    prototypeProcess.WaitForExit();
+                }
+                else return;
+            }
+            prototypeProcess = new Process();
+            prototypeProcess.StartInfo.FileName = exePath;
+            prototypeProcess.EnableRaisingEvents = true;
+            prototypeProcess.Exited += (s, e) => prototypeProcess = null;
+            prototypeProcess.Start();
+        }
+
 
         private void collectUIAssets(string projectDir)
         {
@@ -100,7 +135,7 @@ namespace BPAddin
                 string fileName = Path.GetFileName(file);
                 string dest = Path.Combine(projectDir, fileName);
 
-                File.Move(file, dest);
+                File.Copy(file, dest, overwrite: true);
             }
 
 
@@ -122,7 +157,7 @@ namespace BPAddin
                 else
                     dest = Path.Combine(assetsDir, fileName);
 
-                File.Move(file, dest);
+                File.Copy(file, dest, overwrite: true);
             }
         }
 
@@ -202,6 +237,7 @@ namespace BPAddin
             }
             return -1;
         }
+
         private void updateProgramFile(string dest)
         {
             if (screenNames.Count == 0) return;
@@ -210,7 +246,7 @@ namespace BPAddin
             string content =
                 "using System;\r\n" +
                 "using System.Windows.Forms;\r\n" +
-                "using classes;\r\n\r\n" +
+                "using " + programNamespace + ";\r\n\r\n" +
                 "static class Program\r\n{\r\n" +
                 "    [STAThread]\r\n" +
                 "    static void Main()\r\n    {\r\n" +
@@ -221,7 +257,7 @@ namespace BPAddin
 
             File.WriteAllText(Path.Combine(dest, "Program.cs"), content);
         }
-
+        
 
         private string findExe(string projectDir)
         {
@@ -270,21 +306,33 @@ namespace BPAddin
             }
         }
 
+
         private void cleanOldDirectives(string outputDir) {
+            string classInstanceName = "Instance";
+
             foreach (string file in Directory.GetFiles(outputDir, "*.cs", SearchOption.AllDirectories)){ 
-                string content = File.ReadAllText(file); 
+                string content = File.ReadAllText(file);
                 
                 content = content.Replace("using BPAddin.UILibrary;\r\n", "");
                 content = content.Replace("using BPAddin.UILibrary;\n", "");
                 content = content.Replace("using BPAddin.UILIbrary;\r\n", "");
                 content = content.Replace("using BPAddin.UILIbrary;\n", "");
+                
+                content = System.Text.RegularExpressions.Regex.Replace(
+                    content,
+                    @"(?i)public void (on\w+Click)\(\)",            // case insensitive for the event name - onbuttonNewClick vs. onButtonNewClick
+                    "private void $1(object sender, EventArgs e)"
+                );
+                
 
                 content = System.Text.RegularExpressions.Regex.Replace(
                     content,
-                    @"public void (on\w+Click)\(\)",
-                    "private void $1(object sender, EventArgs e)"
+                    @"public (\w+)\(\)\s*\{\s*\r?\n\s*InitializeComponent\(\);",
+                    "public static $1 "+ classInstanceName +";\r\n\r\n        public $1()\r\n        " +
+                    "{\r\n            " +
+                    "InitializeComponent();\r\n            " +
+                    "$1." + classInstanceName + " = this;"
                 );
-
 
                 File.WriteAllText(file, content);
             }

@@ -2,11 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Windows.Forms;
 using BPAddin.Model;
+using EA;
 
 namespace BPAddin
 {
+    public static class EventMap {
+        public static Dictionary<string, (string eventName, string delegateType)> componentEvents = new Dictionary<string, (string, string)>{
+            { "UIButton", ("Click", "System.EventHandler") },
+            { "UIListBox", ("SelectedIndexChanged", "System.EventHandler") },
+            { "UITextBox", ("TextChanged", "System.EventHandler") },
+            { "UICheckBox", ("CheckedChanged", "System.EventHandler") },
+            { "UIComboBox", ("SelectedIndexChanged", "System.EventHandler") }
+        };
+    }
+
     public class DesignerBuilder
     {
         public string build(string screenName, List<UIComponentInfo> components, string namespaceName, List<String> screenMethods)
@@ -40,15 +51,7 @@ namespace BPAddin
             // 1) instances of screen components
             foreach (var c in comps) { 
                 sb.AppendLine("        this." + c.name + " = new " + c.name + "();");
-                if (c.typeName == "UIButton")
-                {
-                    string handlerName = "on" + c.name + "Click";
-                    if (screenMethods.Contains(handlerName))
-                    {
-                        sb.AppendLine("        this." + c.name + ".Click += new System.EventHandler(this." + handlerName + ");");
-                    }
-
-                }        
+                appendHandler(sb, c, screenMethods);     
             }
             sb.AppendLine("        this.SuspendLayout();");
             sb.AppendLine();
@@ -85,6 +88,22 @@ namespace BPAddin
             sb.AppendLine("}");
 
             return sb.ToString();
+        }
+
+        private void appendHandler(StringBuilder sb, UIComponentInfo c, List<string> screenMethods)
+        {
+            //MessageBox.Show("screenMethods.Count: " + screenMethods.Count);
+            if(EventMap.componentEvents.TryGetValue(c.typeName, out var ev))
+            {
+                string handlerName = "on" + c.name + ev.eventName;
+
+                // in this way we ignore case mistakes like onbuttonNewClick vs. onButtonNewClick
+                // user can enter onButtonNewClick and no fault is done
+                if (screenMethods.Contains(handlerName, StringComparer.OrdinalIgnoreCase)) {
+                    sb.AppendLine("        this." + c.name + "." + ev.eventName + 
+                        " += new " + ev.delegateType + "(this." + handlerName + ");");
+                }
+            }
         }
     }
 }

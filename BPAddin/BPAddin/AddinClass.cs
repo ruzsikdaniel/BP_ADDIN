@@ -1,4 +1,5 @@
-﻿using EA;
+﻿using BPAddin.Util;
+using EA;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -26,6 +27,8 @@ namespace BPAddin
         private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
         private const string menuSettings = "&Add-in Settings";
 
+        private ProjectBuilder projectBuilder = new ProjectBuilder();
+
         private EA.Repository repo;
 
         // array of sub-menu elements for particular root menu element
@@ -42,13 +45,6 @@ namespace BPAddin
             string projectName = System.IO.Path.GetFileNameWithoutExtension(constr);
 
             MessageBox.Show("The project " + projectName + " has been opened successfully.");
-
-            
-            if(MessageBox.Show("Do you want to import the UI Library?", "BPAddin", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Importer imp = new Importer(repository);
-                imp.initUILibrary();
-            }
 
             UIModelSync uiModelSync = new UIModelSync(repository);
 
@@ -138,9 +134,10 @@ namespace BPAddin
             {
                 List<EA.Package> packages = findAllPackages(repo);
 
-                CodeGeneratorForm form = new CodeGeneratorForm(repo);
+                CodeGeneratorForm form = new CodeGeneratorForm(repo, projectBuilder);
                 form.setLblText("Choose a package containing classes for generating:");
-                form.initPackages(packages);
+                form.setLblMainScreen("Choose the prototype's main screen:");
+                form.initComboboxes(packages);
                 form.ShowDialog();
             }
             catch (Exception ex)
@@ -177,8 +174,9 @@ namespace BPAddin
             }
         }
 
+
         [System.Runtime.InteropServices.ComRegisterFunction]
-        public static void RegisterFunction(Type t)
+        public static void registerFunction(Type t)
         {
             Microsoft.Win32.Registry.CurrentUser
                 .CreateSubKey(@"Software\Sparx Systems\EAAddins64\BPAddin")
@@ -186,12 +184,10 @@ namespace BPAddin
         }
 
         [System.Runtime.InteropServices.ComUnregisterFunction]
-        public static void UnregisterFunction(Type t)
+        public static void unregisterFunction(Type t)
         {
             Microsoft.Win32.Registry.CurrentUser
                 .DeleteSubKey(@"Software\Sparx Systems\EAAddins64\BPAddin", false);
         }
     }
-
-    
 }

@@ -53,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinClass.cs" />
+    <Compile Include="UILibrary\UIListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\AddinSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -61,6 +64,7 @@
     </Compile>
     <Compile Include="Model\ScreenInfo.cs" />
     <Compile Include="Model\UIComponentInfo.cs" />
+    <Compile Include="Util\AddinPaths.cs" />
     <Compile Include="Util\EABase.cs" />
     <Compile Include="Generation\CodeGenerator.cs" />
     <Compile Include="Generation\DesignerBuilder.cs" />
