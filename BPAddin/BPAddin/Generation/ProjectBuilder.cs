@@ -301,11 +301,27 @@ namespace BPAddin
 
                 if (process.ExitCode != 0)
                 {
-                    throw new Exception("Command failed: " + command + " " + args + "\n\nOutput:\n" + output + "\n\nError:\n" + error);
+                    string displayMessage = filterBuildErrors(output + "\n" + error);
+                    throw new Exception(displayMessage);
                 }
             }
         }
 
+        private string filterBuildErrors(string rawOutput) {
+            var errors = new List<string>();
+            foreach (string line in rawOutput.Split('\n'))
+            {
+                string trimmed = line.Trim();
+                if (trimmed.Contains(": error "))
+                    errors.Add(trimmed);
+            }
+
+            if (errors.Count == 0)
+                return "Build failed. No specific errors found.\n\nRaw output:\n" + rawOutput;
+
+            return "Build failed with " + errors.Count + " error(s):\n\n" + string.Join("\n\n", errors);
+
+        }
 
         private void cleanOldDirectives(string outputDir) {
             string classInstanceName = "Instance";

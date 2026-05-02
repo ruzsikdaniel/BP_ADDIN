@@ -84,7 +84,7 @@ namespace BPAddin
             cg.initScreenClasses(selectedPackage);
 
             List<string> errors = cg.validateAppModelNaming(cg.screens, selectedPackage);
-            MessageBox.Show("errors in naming: " + errors.Count);
+            //MessageBox.Show("errors in naming: " + errors.Count);
             if (errors.Count > 0)
             {
                 MessageBox.Show(

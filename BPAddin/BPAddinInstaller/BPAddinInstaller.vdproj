@@ -142,6 +142,14 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
             }
         }
     }
@@ -149,7 +157,7 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_2BD1CAB595F54A9C9BF3E96FAB02380B"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_C0863A8E945A4986B19E7474C1FCD638"
             {
             "Name" = "8:Primary output from BPAddin (Active)"
             "Condition" = "8:"
@@ -159,9 +167,25 @@
             "Arguments" = "8:"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_BCBACA67_364F_4B4D_9FBC_130E8B646EB6"
+            "Identifier" = "8:_EDD66C46_2FBC_4EF8_B6A2_4329A865015A"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:"
+            "Run64Bit" = "11:TRUE"
+            }
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_E22E28999B794391AB45657334084E69"
+            {
+            "Name" = "8:Primary output from BPAddin (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_7A73DA7FFDE54F8D9B4B111000C45DC4"
+            "FileType" = "3:1"
+            "InstallAction" = "3:4"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_A738EBC6_5746_474F_A0C5_FA9F4BA488D5"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            "Run64Bit" = "11:TRUE"
             }
         }
         "DefaultFeature"
@@ -467,7 +491,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BPAddin"
         "ProductCode" = "8:{5DC51BCA-A89E-4266-82D1-A51B006CB370}"
-        "PackageCode" = "8:{483E85D8-2FA2-4AB5-ADBB-2321520DD623}"
+        "PackageCode" = "8:{0F79AB13-C1AE-4EB1-9206-9BF66832CE82}"
         "UpgradeCode" = "8:{A0452970-0484-4D25-8AC7-41F95B940913}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -480,7 +504,7 @@
         "ARPHELPLINK" = "8:"
         "Title" = "8:BPAddin"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:daniruzsik@gmail.com"
+        "ARPCONTACT" = "8:DR"
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:"
@@ -551,7 +575,7 @@
                             "Transitive" = "11:FALSE"
                                 "Keys"
                                 {
-                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_EA5C8659A42744B8BA4393B229A23970"
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_724C7109DCCF483B92A478957388196D"
                                     {
                                     "Name" = "8:EAAddins64"
                                     "Condition" = "8:"
@@ -560,7 +584,35 @@
                                     "Transitive" = "11:FALSE"
                                         "Keys"
                                         {
-                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_944B6BF8EA5B4400B38CF8317A4518DD"
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_ABDD0A2A82994F13A842127121860BA3"
+                                            {
+                                            "Name" = "8:BPAddin"
+                                            "Condition" = "8:"
+                                            "AlwaysCreate" = "11:FALSE"
+                                            "DeleteAtUninstall" = "11:FALSE"
+                                            "Transitive" = "11:FALSE"
+                                                "Keys"
+                                                {
+                                                }
+                                                "Values"
+                                                {
+                                                }
+                                            }
+                                        }
+                                        "Values"
+                                        {
+                                        }
+                                    }
+                                    "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_EEF98E9BA6D142B08AAC71B381490C2D"
+                                    {
+                                    "Name" = "8:EAAddins"
+                                    "Condition" = "8:"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "DeleteAtUninstall" = "11:FALSE"
+                                    "Transitive" = "11:FALSE"
+                                        "Keys"
+                                        {
+                                            "{60EA8692-D2D5-43EB-80DC-7906BF13D6EF}:_9A4338B58CA646518809C0572A4B976B"
                                             {
                                             "Name" = "8:BPAddin"
                                             "Condition" = "8:"
@@ -1047,7 +1099,7 @@
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:2"
+            "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{53BD4088-0243-49C3-9019-C9C9434DD46D}"

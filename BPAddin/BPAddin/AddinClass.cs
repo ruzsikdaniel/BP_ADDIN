@@ -81,7 +81,7 @@ namespace BPAddin
                 return;
             }
 
-            // TODO: reformat this into a dictionary of menu elements and handler function
+            // if possible, in the future reformat this into a dictionary of menu elements and handler function
             // let appropriate handler functions be called in the case of particular menu elements
             switch (itemName)
             {
@@ -178,9 +178,16 @@ namespace BPAddin
         [System.Runtime.InteropServices.ComRegisterFunction]
         public static void registerFunction(Type t)
         {
+            // register the addin for the 64-bit EA Add-in versions
             Microsoft.Win32.Registry.CurrentUser
                 .CreateSubKey(@"Software\Sparx Systems\EAAddins64\BPAddin")
                 .SetValue("", "BPAddin.AddinClass");
+
+
+            // register the addin for the 32-bit EA Add-in versions
+            Microsoft.Win32.Registry.CurrentUser
+               .CreateSubKey(@"Software\Sparx Systems\EAAddins\BPAddin")
+               .SetValue("", "BPAddin.AddinClass");
         }
 
         [System.Runtime.InteropServices.ComUnregisterFunction]

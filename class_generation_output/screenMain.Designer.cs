@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace ApplicationModel
 {
-partial class screenScreenMain
+partial class screenMain
 {
     private System.ComponentModel.IContainer components = null;
 
@@ -22,7 +22,7 @@ partial class screenScreenMain
         this.buttonClose = new buttonClose();
         this.buttonClose.Click += new System.EventHandler(this.onbuttonCloseClick);
         this.labelDescription = new labelDescription();
-        this.listBoxListBox = new listBoxListBox();
+        this.listBoxTasks = new listBoxTasks();
         this.SuspendLayout();
 
         //
@@ -53,18 +53,18 @@ partial class screenScreenMain
         this.Controls.Add(this.labelDescription);
 
         //
-        // listBoxListBox
+        // listBoxTasks
         //
-        this.listBoxListBox.Name = "listBoxListBox";
-        this.listBoxListBox.Text = "ListBox";
-        this.listBoxListBox.Location = new System.Drawing.Point(22, 24);
-        this.listBoxListBox.Size = new System.Drawing.Size(186, 214);
-        this.Controls.Add(this.listBoxListBox);
+        this.listBoxTasks.Name = "listBoxTasks";
+        this.listBoxTasks.Text = "Tasks";
+        this.listBoxTasks.Location = new System.Drawing.Point(22, 24);
+        this.listBoxTasks.Size = new System.Drawing.Size(186, 214);
+        this.Controls.Add(this.listBoxTasks);
 
         //
-        // screenScreenMain
+        // screenMain
         //
-        this.Text = "screenScreenMain";
+        this.Text = "screenMain";
         this.ClientSize = new System.Drawing.Size(580, 318);
         this.ResumeLayout(false);
     }
@@ -72,6 +72,6 @@ partial class screenScreenMain
     private BPAddin.UIButton buttonAddTask;
     private BPAddin.UIButton buttonClose;
     private BPAddin.UILabel labelDescription;
-    private BPAddin.UIListBox listBoxListBox;
+    private BPAddin.UIListBox listBoxTasks;
 }
 }
