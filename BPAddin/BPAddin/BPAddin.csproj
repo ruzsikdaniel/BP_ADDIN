@@ -54,9 +54,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinClass.cs" />
-    <Compile Include="Util\BPAddinInstaller.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UILibrary\UIListBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -66,8 +63,7 @@
     <Compile Include="UI\AddinSettings.Designer.cs">
       <DependentUpon>AddinSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\ScreenInfo.cs" />
-    <Compile Include="Model\UIComponentInfo.cs" />
+    <Compile Include="Model\UIComponent.cs" />
     <Compile Include="Util\AddinPaths.cs" />
     <Compile Include="Util\EABase.cs" />
     <Compile Include="Generation\CodeGenerator.cs" />
@@ -86,10 +82,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="Sync\StereotypeMap.cs" />
     <Compile Include="Sync\UIComponentReader.cs" />
-    <Compile Include="Import\UILibraryInit.cs" />
     <Compile Include="Sync\UIModelSync.cs" />
     <Compile Include="UILibrary\UIButton.cs">
       <SubType>Component</SubType>

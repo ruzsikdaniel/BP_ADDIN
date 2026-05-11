@@ -18,10 +18,10 @@ namespace BPAddin
             stereotypeMap = new StereotypeMap();
         }
 
-        public List<UIComponentInfo> getComponents(EA.Repository repo, EA.Element screenElement)
+        public List<UIComponent> getComponents(EA.Repository repo, EA.Element screenElement)
         {
             this.repo = repo;
-            var result = new List<UIComponentInfo>();
+            var result = new List<UIComponent>();
 
             EA.Diagram uiDiagram = findUIDiagram(repo);
             if (uiDiagram == null)
@@ -37,21 +37,25 @@ namespace BPAddin
                 return result;
             }
 
+            // find and parse UI model diagram 
             EA.DiagramObject dialogDObj = findDiagramObject(uiDiagram, dialogElement.ElementID);
 
             EA.Element freshDialog = repo.GetElementByID(dialogElement.ElementID);
             foreach (EA.Element element in freshDialog.Elements)
             {
                 string prefix = StereotypeMap.getClassPrefix(element.Stereotype, stereotypeMap.map);
-                if (prefix == null) continue;
+                if (prefix == null) 
+                    continue;
+
                 string className = prefix + element.Name.Trim().Replace(" ", "");
 
                 EA.DiagramObject dObj = findDiagramObject(uiDiagram, element.ElementID);
                 if (dObj == null) continue;
 
-                string parentType = findUILibraryParent(repo, element) ??
+                string parentType = findUILibraryParent(repo, element) ?? 
                     (stereotypeMap.map.TryGetValue(element.Stereotype, out string t) ? t : null);
 
+                // create new UIComponent with its approriate data
                 int absX = (int)(dObj.left * ea_to_px);
                 int absY = (int)(-dObj.top * ea_to_px);
                 int w = (int)((dObj.right - dObj.left) * ea_to_px);
@@ -60,7 +64,7 @@ namespace BPAddin
                 int originX = dialogDObj != null ? (int)(dialogDObj.left * ea_to_px) : 0;
                 int originY = dialogDObj != null ? (int)(-dialogDObj.top * ea_to_px) : 0;
 
-                result.Add(new UIComponentInfo
+                result.Add(new UIComponent
                 {
                     name = className,
                     typeName = parentType,
@@ -76,7 +80,7 @@ namespace BPAddin
             {
                 int sw = (int)((dialogDObj.right - dialogDObj.left) * ea_to_px);
                 int sh = (int)((dialogDObj.top - dialogDObj.bottom) * ea_to_px);
-                result.Insert(0, new UIComponentInfo { name = "__screen__", w = sw, h = sh });
+                result.Insert(0, new UIComponent { name = "__screen__", w = sw, h = sh });
             }
 
             return result;
@@ -105,6 +109,7 @@ namespace BPAddin
                 if (firstScreen == null)
                     firstScreen = el;
 
+                // identify UI model screen with class of Application model screen
                 string tv = findTaggedValue(el, "screenClass");
                 if (tv == screenClassName)
                     return el;

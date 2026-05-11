@@ -6,7 +6,7 @@ namespace BPAddin.util
     public static class EABase
     {
         // all commonly used/useable Addin methods are located here
-        // using this static class enables seamless function calls
+        // using this static class enables *seamless* function calls
 
         public static EA.Package findPackageByName(EA.Repository repo, string name)
         {

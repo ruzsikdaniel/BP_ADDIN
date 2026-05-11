@@ -157,21 +157,6 @@
     {
         "CustomAction"
         {
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_C0863A8E945A4986B19E7474C1FCD638"
-            {
-            "Name" = "8:Primary output from BPAddin (Active)"
-            "Condition" = "8:"
-            "Object" = "8:_7A73DA7FFDE54F8D9B4B111000C45DC4"
-            "FileType" = "3:1"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_EDD66C46_2FBC_4EF8_B6A2_4329A865015A"
-            "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
-            "Run64Bit" = "11:TRUE"
-            }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_E22E28999B794391AB45657334084E69"
             {
             "Name" = "8:Primary output from BPAddin (Active)"
@@ -459,6 +444,17 @@
                     "Property" = "8:_E66D8EE797774AB7A57CA984215386E1"
                         "Folders"
                         {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_0417D65B035643778C8BD1AA3AE36A06"
+                            {
+                            "Name" = "8:GeneratedClasses"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_D172717E1D92429A8ED83B981852FB22"
+                                "Folders"
+                                {
+                                }
+                            }
                             "{9EF0B969-E518-4E46-987F-47570745A589}:_24A5A6DBA70F40A788D616CF4BC6940A"
                             {
                             "Name" = "8:UILibrary"
@@ -466,6 +462,17 @@
                             "Condition" = "8:"
                             "Transitive" = "11:FALSE"
                             "Property" = "8:_E3AB6417FC3E4A00A1C71A56A73D52FC"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_B586E740C8C742BE9661A05A9A28E248"
+                            {
+                            "Name" = "8:Project"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_17D3334EECA9439BBC1710AA07F33C51"
                                 "Folders"
                                 {
                                 }
@@ -491,7 +498,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:BPAddin"
         "ProductCode" = "8:{5DC51BCA-A89E-4266-82D1-A51B006CB370}"
-        "PackageCode" = "8:{0F79AB13-C1AE-4EB1-9206-9BF66832CE82}"
+        "PackageCode" = "8:{F6909D82-64B6-457C-AFB0-EBA4A752D76C}"
         "UpgradeCode" = "8:{A0452970-0484-4D25-8AC7-41F95B940913}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -1099,7 +1106,7 @@
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
+            "ProjectOutputGroupRegister" = "3:2"
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{53BD4088-0243-49C3-9019-C9C9434DD46D}"

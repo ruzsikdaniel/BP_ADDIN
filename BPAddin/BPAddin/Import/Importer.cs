@@ -76,7 +76,6 @@ namespace BPAddin
             }
 
             // create package to root
-            //MessageBox.Show("Creating new package - " + pkgName + " as type " + uiLibPkgType);
             EA.Package pkgNew = (EA.Package)root.Packages.AddNew(UILIB_PKGNAME, UILIB_PKGTYPE);
             pkgNew.Update();
 

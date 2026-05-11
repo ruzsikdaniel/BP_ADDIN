@@ -8,6 +8,7 @@ namespace BPAddin
 {
     public class StereotypeMap
     {
+        // map of Win32 UI diagram - UI Library elements
         public Dictionary<string, string> map = new Dictionary<string, string>() {
             { "win32Dialog", "UIScreen"},
             { "win32Button", "UIButton"},

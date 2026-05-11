@@ -100,8 +100,6 @@ namespace BPAddin
 
                     s.tbx.Text = choice;    // update appropriate textbox
                     s.set(choice);          // set appropriate setting to choice value
-
-                    //MessageBox.Show(s.description + " changed to: " + choice);
                 }
             }
         }

@@ -18,10 +18,5 @@ namespace BPAddin
             this.ForeColor = Color.Black;
             this.Font = new Font("Segoe UI", 9f);
         }
-        /*
-        public string classname => "Label";
-        public string ea_stereotype => "win32StaticText";
-        public string winforms_type => "System.Windows.Forms.Label";
-        */
     }
 }

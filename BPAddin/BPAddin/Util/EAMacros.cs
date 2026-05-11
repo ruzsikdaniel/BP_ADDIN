@@ -18,9 +18,7 @@
         public const string UILIB_SCREEN = "UIScreen";
         public const string UILIB_DIAGRAMTYPE = "Class";
 
-
-
-        public const string uiLibName = "UI Library";
+        public const string UILIB_NAME = "UI Library";
 
     }
 }

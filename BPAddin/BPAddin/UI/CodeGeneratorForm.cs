@@ -10,7 +10,6 @@ using System.IO;
 
 using static BPAddin.util.EABase;
 using static BPAddin.util.EAMacros;
-using BPAddin.model;
 
 namespace BPAddin
 {
@@ -62,7 +61,8 @@ namespace BPAddin
             foreach (EA.Element screen in cg.screens)
                 cbxMainScreen.Items.Add(screen.Name);
 
-            cbxMainScreen.SelectedIndex = 0;
+            if(cbxMainScreen.Items.Count > 0)
+                cbxMainScreen.SelectedIndex = 0;
         }
 
         private void btnGenerate_Click(object sender, EventArgs e)
@@ -76,7 +76,7 @@ namespace BPAddin
 
             EA.Package selectedPackage = cg.packages[index];
 
-            string uiLibDir = AddinPaths.UILibraryPath; 
+            string uiLibDir = AddinPaths.UILibraryPath;
             string generatedDir = Properties.Settings.Default.GeneratedDir;
             string outputDir = Properties.Settings.Default.ProjectDir;
 
@@ -84,7 +84,6 @@ namespace BPAddin
             cg.initScreenClasses(selectedPackage);
 
             List<string> errors = cg.validateAppModelNaming(cg.screens, selectedPackage);
-            //MessageBox.Show("errors in naming: " + errors.Count);
             if (errors.Count > 0)
             {
                 MessageBox.Show(
@@ -101,7 +100,8 @@ namespace BPAddin
                 EA.Project proj = cg.repo.GetProjectInterface();
                 string pkgGuid = proj.GUIDtoXML(selectedPackage.PackageGUID);
 
-                if (Directory.Exists(generatedDir)) {
+                if (Directory.Exists(generatedDir))
+                {
                     foreach (string file in Directory.GetFiles(generatedDir, "*.cs"))
                         System.IO.File.Delete(file);
                 }
@@ -117,7 +117,7 @@ namespace BPAddin
 
                 MessageBox.Show("EA generation complete.\n Files: " + generatedDir, "BPAddin", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Error during EA generation: \n\n" + ex.Message, "BPAddin - error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -138,9 +138,5 @@ namespace BPAddin
             // close this window
             Close();
         }
-
-        
-
-
     }
 }

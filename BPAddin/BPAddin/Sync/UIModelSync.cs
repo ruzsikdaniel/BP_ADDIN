@@ -72,11 +72,9 @@ namespace BPAddin
             return findElementByName(uiLibPkg, uiName);
         }
 
-        
 
-        
-
-        // does not create new elements into browser or diagram
+        // does not create new elements into browser or diagram (attributes, methods, etc. would be also discarded)
+        // future works: delete or otherwise modify existing classes with no data loss
         public void syncGUIElement(EA.Element uiEl, EA.Package appClassPkg, EA.Element screenClass, string appPkgName)
         {
             string prefix = StereotypeMap.getClassPrefix(uiEl.Stereotype, stereotypeMap.map);
@@ -84,7 +82,6 @@ namespace BPAddin
                 return;
 
             string className = prefix + uiEl.Name.Trim().Replace(" ", "");
-            //MessageBox.Show("syncGUIElement: " + className);
 
             EA.Element elClass = null;
 
@@ -94,7 +91,6 @@ namespace BPAddin
                 if(element.Name == className)
                 {
                     elClass = element;
-                    //MessageBox.Show(className + " already exists!");
                     break;
                 }
             }
@@ -109,7 +105,6 @@ namespace BPAddin
             }
 
             appDiagram = findDiagramByName(appClassPkg, appPkgName);
-            //MessageBox.Show("new class " + elClass.Name + " created!");
 
             if (appDiagram != null && findDobjInDiagram(appDiagram, elClass.ElementID) == null)
             {
@@ -117,10 +112,8 @@ namespace BPAddin
                 dobj.ElementID = elClass.ElementID;
                 dobj.Update();
                 appDiagram.DiagramObjects.Refresh();
-                //MessageBox.Show("dobj for " + elClass.Name + " with elementID " + dobj.ElementID + " created!");
             }
 
-            //MessageBox.Show("seeking uiParent");
             EA.Element uiParent = findUILibraryElement(uiEl.Stereotype);
             if (uiParent != null)
             {
@@ -140,7 +133,6 @@ namespace BPAddin
                 if(element.Name == screenClassName)
                 {
                     screenClass = element;
-                    //MessageBox.Show("screenclass: " + screenClassName + " found!");
                     break;
                 }
             }
@@ -163,8 +155,6 @@ namespace BPAddin
 
             appDiagram = findDiagramByName(appClassPkg, appPkgName);
 
-            //MessageBox.Show("appDiagram: " + (appDiagram == null ? "NULL" : appDiagram.Name));
-
 
             if (appDiagram != null && findDobjInDiagram(appDiagram, screenClass.ElementID) == null) {
                 EA.DiagramObject dobj = (EA.DiagramObject)appDiagram.DiagramObjects.AddNew("", "");
@@ -183,18 +173,14 @@ namespace BPAddin
                 if (!stereotypeMap.map.ContainsKey(child.Stereotype)) continue;
                 syncGUIElement(child, appClassPkg, screenClass, appPkgName);
             }
-
-            //MessageBox.Show("screenClass: " + screenClass.Name);
         }
-
-        
-
         
 
         private void addGeneralizationIfMissing(EA.Element child, EA.Element parent)
         {
             foreach (EA.Connector conn in child.Connectors)
-                if (conn.Type == "Generalization" && conn.SupplierID == parent.ElementID) return;
+                if (conn.Type == "Generalization" && conn.SupplierID == parent.ElementID) 
+                    return;
 
             EA.Connector gen = (EA.Connector)child.Connectors.AddNew("", "Generalization");
             gen.SupplierID = parent.ElementID;

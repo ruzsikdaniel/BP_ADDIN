@@ -10,10 +10,10 @@ namespace BPAddin.Util
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "BPAddin", "UILibrary");
 
-        // C:\Users\<user>\Documents\BPAddin\Generated
+        // C:\Users\<user>\Documents\BPAddin\GeneratedClasses
         public static string DefaultGeneratedDir => 
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            "BPAddin", "Generated Classes");
+            "BPAddin", "GeneratedClasses");
 
         // C:\Users\<user>\Documents\BPAddin\Project
         public static string DefaultProjectDir => 

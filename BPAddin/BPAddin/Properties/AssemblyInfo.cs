@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BPAddin")]
-[assembly: AssemblyDescription("This is an Add-in for Enterprise Architect.")]
+[assembly: AssemblyDescription("This is an Add-in for Enterprise Architect and is part of a bachelor's thesis at the Faculty of Informatics and Information Technologies, Slovak Technical Universita in Bratislava.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BPAddin")]
-[assembly: AssemblyCopyright("Copyright ©  2026")]
+[assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

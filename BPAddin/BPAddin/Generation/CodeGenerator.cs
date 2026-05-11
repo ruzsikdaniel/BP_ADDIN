@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Windows.Forms;
 using static BPAddin.util.EABase;
 using static BPAddin.util.EAMacros;
@@ -119,7 +118,7 @@ namespace BPAddin
                         methods.Add(child.Name);
                 }
                 
-                List<UIComponentInfo> components = uireader.getComponents(repo, screen);
+                List<UIComponent> components = uireader.getComponents(repo, screen);
 
 
                 string namespaceName = repo.GetPackageByID(screen.PackageID).Name;
@@ -147,8 +146,6 @@ namespace BPAddin
             }
         }
 
-        
-
         public void setPackageFilepaths(EA.Package pkg, string dir)
         {
             foreach (EA.Element el in pkg.Elements)
@@ -172,7 +169,7 @@ namespace BPAddin
         {
             List<string> errors = new List<string>();
 
-            // 0) ollect names of all components in application model
+            // 0) collect names of all components in application model
             HashSet<string> componentNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (EA.Element el in appPkg.Elements)
                 if (el.Type == ELTYPE_CLASS && el.Stereotype == STYPE_UIELEMENT)
@@ -189,52 +186,49 @@ namespace BPAddin
                 }
 
                 // check if the current element is a valid screen
-                if (screens.Any(s => s.Name == el.Name))
+                if (!screens.Any(s => s.Name == el.Name))
+                    continue;
+                
+                foreach (EA.Element child in el.Elements)
                 {
-                    foreach (EA.Element child in el.Elements)
+                    // we only need Activity elements of given screen class
+                    if (child.Type != ELTYPE_ACTIVITY)
+                        continue;
+
+                    string actName = child.Name;
+                    bool matched = false;
+
+                    // format: on<className><eventName>
+                    // 1) check if name of Activity starts with "on"
+
+                    if (actName.StartsWith("on"))
                     {
-                        //MessageBox.Show("child: " + child.Name + " | Type: " + child.Type);
-
-
-                        // we only need Activity elements of given screen class
-                        if (child.Type != ELTYPE_ACTIVITY)
-                            continue;
-
-                        string actName = child.Name;
-                        bool matched = false;
-
-                        // format: on<className><eventName>
-                        // 1) check if name of Activity starts with "on"
-
-                        if (actName.StartsWith("on"))
+                        string remainder = actName.Substring(2);
+                        foreach (string componentName in componentNames)
                         {
-                            string remainder = actName.Substring(2);
-                            foreach (string componentName in componentNames)
+                            // 2) check if name contains a valid className
+                            if (remainder.StartsWith(componentName, StringComparison.Ordinal))
                             {
-                                // 2) check if name contains a valid className
-                                if (remainder.StartsWith(componentName, StringComparison.Ordinal))
+                                // valid className found - cut off the remainder of the actName (should contain only eventName)
+                                string eventCandidate = remainder.Substring(componentName.Length);
+
+                                // 3) check if the remainder string contains <eventName>
+                                bool validEvent = EventMap.componentEvents.Values.
+                                    Any(ev => ev.eventName.Equals(eventCandidate, StringComparison.OrdinalIgnoreCase));
+
+                                if (validEvent)
                                 {
-                                    // valid className found - cut off the remainder of the actName (should contain only eventName)
-                                    string eventCandidate = remainder.Substring(componentName.Length);
-
-                                    // 3) check if the remainder string contains <eventName>
-                                    bool validEvent = EventMap.componentEvents.Values.
-                                        Any(ev => ev.eventName.Equals(eventCandidate, StringComparison.OrdinalIgnoreCase));
-
-                                    if (validEvent)
-                                    {
-                                        matched = true;
-                                        break;
-                                    }
+                                    matched = true;
+                                    break;
                                 }
                             }
                         }
+                    }
 
-                        if (!matched)
-                        {
-                            errors.Add("Activity '" + actName + "' for '" + el.Name +
-                                "' - incorrect name formatting (format 'on<className><eventName>'");
-                        }
+                    if (!matched)
+                    {
+                        errors.Add("Activity '" + actName + "' for '" + el.Name +
+                            "' - incorrect name formatting (format 'on<className><eventName>'");
                     }
                 }
             }

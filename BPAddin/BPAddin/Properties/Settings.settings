@@ -3,19 +3,19 @@
   <Profiles />
   <Settings>
     <Setting Name="GeneratedDir" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\class_generation_output</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ProjectDir" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\project</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UILibraryDir" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\\_School\\BP\\funkcny_prototyp\\BP_ADDIN\\BPAddin\\BPAddin\\UILibrary</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AppCDPkg" Type="System.String" Scope="User">
-      <Value Profile="(Default)">class diagram</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UIDiagramPkg" Type="System.String" Scope="User">
-      <Value Profile="(Default)">UI Diagram</Value>
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

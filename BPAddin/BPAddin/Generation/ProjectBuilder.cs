@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Policy;
 using System.Windows.Forms;
 
 namespace BPAddin
@@ -11,7 +10,7 @@ namespace BPAddin
     {
         private string generatedSrcDir;  // directory for EA-generated .cs files
         private string uiLibrarySrcDir;  // directory for UILibrary elements
-        private string projectDir; // directory for project created from generated files
+        private string projectDir;       // directory for project created from generated files
 
         private List<string> screenNames = new List<string>();
 
@@ -64,7 +63,7 @@ namespace BPAddin
                 Directory.Move(tempDir, projectDir);
 
 
-                // build the project ->.exe file
+                // build the project into an .exe file
                 runCommand("dotnet", "build \"" + projectDir + "\"");                
 
                 // find the .exe file
@@ -169,7 +168,7 @@ namespace BPAddin
             {
                 string fileName = Path.GetFileName(file);
 
-                // TODO: use dynamic map of UI Library element file names instead
+                // future works: use dynamic map of UI Library element file names instead
                 if (!fileName.StartsWith("UI"))
                     continue;
 

@@ -12,19 +12,13 @@ namespace BPAddin
         public virtual object EA_GetMenuItems(Repository repository, string location, string menuName) { return null; }
         public virtual void EA_MenuClick(Repository repository, string location, string menuName, string itemName) { }
         public virtual void EA_FileOpen(Repository repository) { }
-
-        // not a valid EA event
-        public virtual void EA_OnPostSaveDiagram(Repository repository, int diagramID) { }
-
-        public virtual bool EA_OnPostNewElement(EA.Repository repository, EA.EventProperties info) { return false; }
     }
 
     public class AddinClass : AddinBase
     {
         // menu elements here
         private const string menuHeader = "-&BPAddin";
-        private const string menuGenerateCode = "&Generate Code";
-        private const string menuStereotypeInit = "&Initialize UI Library Stereotypes";
+        private const string menuGeneratePrototype = "&Generate Prototype";
         private const string menuSettings = "&Add-in Settings";
 
         private ProjectBuilder projectBuilder = new ProjectBuilder();
@@ -34,11 +28,10 @@ namespace BPAddin
         // array of sub-menu elements for particular root menu element
         private List<string> menuItems = new List<string>();
 
-        // state variables
         private bool projectOpened = false;
 
         public override void EA_FileOpen(Repository repository)
-        {
+        { 
             repo = repository;
 
             string constr = repository.ConnectionString;
@@ -46,20 +39,13 @@ namespace BPAddin
 
             MessageBox.Show("The project " + projectName + " has been opened successfully.");
 
-            UIModelSync uiModelSync = new UIModelSync(repository);
-
-            string uiPkgName = Properties.Settings.Default.UIDiagramPkg;
-            string appPkgName = Properties.Settings.Default.AppCDPkg;
-
-            uiModelSync.syncAll(uiPkgName, appPkgName);
-
             projectOpened = true;
         }
 
         public override object EA_GetMenuItems(Repository repository, string location, string menuName)
         {
             // initialize menu arrays
-            // each menu array will contains names of its sub-menu elements
+            // each menu array will contains names (string) of its sub-menu elements
             initMenuArrays();
 
             switch (menuName)
@@ -68,7 +54,7 @@ namespace BPAddin
                     return menuHeader;
                 case menuHeader:
                     return menuItems.ToArray();
-                // each case here represents a root menu element
+                // each case is a root menu element
                 default:
                     return null;
             }
@@ -85,11 +71,8 @@ namespace BPAddin
             // let appropriate handler functions be called in the case of particular menu elements
             switch (itemName)
             {
-                case menuGenerateCode:
-                    handleMenuGenerateCode();
-                    break;
-                case menuStereotypeInit:
-                    handleMenuStereotypeInit();
+                case menuGeneratePrototype:
+                    handleMenuGeneratePrototype();
                     break;
                 case menuSettings:
                     handleMenuSettings();
@@ -98,38 +81,19 @@ namespace BPAddin
             }
         }
 
-        public override void EA_OnPostSaveDiagram(Repository repository, int diagramID)
-        {
-            EA.Diagram diagram = repository.GetDiagramByID(diagramID);
-            //if (diagram.Type != "Win32 User Interface") 
-            //    return;
-
-            MessageBox.Show("Diagram saved!");
-        }
-
-        public override bool EA_OnPostNewElement(Repository repository, EventProperties info)
-        {
-            // fires when a new element is created
-            int elementID = int.Parse(info.Get("ElementId").Value.ToString());
-            EA.Element el = repository.GetElementByID(elementID);
-            //MessageBox.Show("New Element: " + el.Name + ", Stereotype: " + el.Stereotype);
-            return false;
-        }
-
 
         private void initMenuArrays()
         {
             menuItems.Clear();
 
-            menuItems.Add(menuGenerateCode);
-            //menus_menuHeader.Add(menuStereotypeInit);
+            menuItems.Add(menuGeneratePrototype);
             menuItems.Add(menuSettings);
 
             // add menu elements to different root menus
             // ...
         }
 
-        private void handleMenuGenerateCode() {
+        private void handleMenuGeneratePrototype() {
             try
             {
                 List<EA.Package> packages = findAllPackages(repo);
@@ -146,25 +110,10 @@ namespace BPAddin
             }
         }
 
-        private void handleMenuStereotypeInit() {
-            try
-            {
-                UILibraryInit init = new UILibraryInit();
-                init.initUIElementStereotype(repo);
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show("Error during initialization process:\n\n" + e.Message, "BPAddin - error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void handleMenuSettings() { 
-            // menuSettings menu logic
-
+        private void handleMenuSettings() {
             try
             {
                 SettingsForm as_form = new SettingsForm(repo);
-                // init of text boxes
                 as_form.ShowDialog();
 
             }
@@ -174,6 +123,9 @@ namespace BPAddin
             }
         }
 
+
+        //  in current form does not create new register values
+        //  and thus does not register BPAddin automatically to EA COM API
 
         [System.Runtime.InteropServices.ComRegisterFunction]
         public static void registerFunction(Type t)

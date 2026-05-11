@@ -155,7 +155,7 @@
             this.Controls.Add(this.lblText);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "CodeGeneratorForm";
-            this.Text = "Generate code from model";
+            this.Text = "Generate prototype from model";
             this.ResumeLayout(false);
             this.PerformLayout();
 
